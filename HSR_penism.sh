@@ -19,7 +19,7 @@ uncomment_lines() {
 # 循环运行测试数据
 run_test_data() {
   local test_data_path=$1
-  sed -i "s#test_data_path:.*#test_data_path: $test_data_path#" config/HSR/config.yaml
+  sed -i "s#test_data_path:.*#test_data_path: $test_data_path #" config/HSR/config.yaml
   python main.py --model_config_path config/HSR/config.yaml
 }
 
@@ -43,7 +43,7 @@ execute_iterations() {
   local toggle_flag=$3
 
   for ((i = start_index; i <= end_index; i++)); do
-    new_test_data_path="'data/penism/test_data$i.csv'"
+    new_test_data_path="'data/penism/test_data$i\_2.csv'"
     run_test_data "$new_test_data_path"
     toggle_training_code $toggle_flag
   done

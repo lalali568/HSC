@@ -35,10 +35,9 @@ class TransformerEncoderLayer(nn.Module):
 
     def forward(self, src,is_causal=None,src_mask=None, src_key_padding_mask=None):
         src2 = self.self_attn(src, src, src)[0]
-        batchnorm=nn.BatchNorm1d(src.shape[1]).to(self.config['device'])
-        src = batchnorm(src + self.dropout1(src2))
+        src = src + self.dropout1(src2)
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
-        src = batchnorm(src + self.dropout2(src2))
+        src = src + self.dropout2(src2)
         return src
 
 class TransformerDecoderLayer(nn.Module):
@@ -57,14 +56,12 @@ class TransformerDecoderLayer(nn.Module):
 
 
     def forward(self, tgt, memory, tgt_mask=None, memory_mask=None, tgt_key_padding_mask=None, memory_key_padding_mask=None):
-        tgt2 = self.self_attn(tgt, tgt, tgt)[0]#这里也没有进行位置编码#返回的是两个元素，第一个是attention的output，第二个是attention的weight，只要第一个输出，所以是[0]
-        batchnorm=nn.BatchNorm1d(tgt.shape[1])#这个就是我发现对于有的数据集直接训练就失效了，然后加一个batchnorm试一下
-        layernorm=batchnorm.to(self.config['device'])
-        tgt = layernorm(tgt + self.dropout1(tgt2))
+        tgt2 = self.self_attn(tgt, tgt, tgt)[0]
+        tgt = tgt + self.dropout1(tgt2)
         tgt2 = self.multihead_attn(tgt, memory, memory)[0]
-        tgt = layernorm(tgt + self.dropout2(tgt2))
+        tgt = tgt + self.dropout2(tgt2)
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt))))
-        tgt = layernorm(tgt + self.dropout3(tgt2))
+        tgt = tgt + self.dropout3(tgt2)
         return tgt
 
 class TranAD(nn.Module):
@@ -75,7 +72,7 @@ class TranAD(nn.Module):
         self.n_window = config['window_size']
         self.n = self.n_feats * self.n_window
         self.dim_feedforward = config['dim_feedforward']
-        self.nhead = config['nhead']
+        self.nhead = config['feat']
         self.pos_encoder = PositionalEncoding(2*self.n_feats,0.1,self.n_window)
         encoder_layers = TransformerEncoderLayer(config,d_model=2 * self.n_feats, nhead=self.nhead, dim_feedforward=self.dim_feedforward, dropout=config['dropout'])  # 这里是定义一个encoder_layer
         self.transformer_encoder = TransformerEncoder(encoder_layers, 1)

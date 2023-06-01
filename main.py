@@ -11,7 +11,7 @@ from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, p
     adjust_scores
 from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset
 from torch.utils.data import DataLoader
-from models import TranAD_model_modified2 as TranAD_model
+from models import TranAD_model as TranAD_model
 from models import AE_basic, GRELEN_model, COUTA_model, HSR_model
 from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer
 import torch.nn as nn
@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -34,22 +34,20 @@ device = config['device']
 # %% 设定dataset
 if config['model'] == 'TranAD':
     train_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='train', nosie=False)
-    val_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='val')
+    if config['dataset'] == 'penism':
+        val_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='val')
     test_dataset_W = TranAD_dataset.TranADdataset_W(config, flag='test')
-    train_val_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='train_val')
     if config['dataset'] == 'penism':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         val_data_orig = np.loadtxt(config['val_data_path'], delimiter=',')
-        train_val_data_orig, val_data_orig, test_data_orig = train_data_orig[:6000, :], val_data_orig[:,
-                                                                                        :-1], test_data_orig[:,
-                                                                                              :-1]  # 把这个提出来是因为后面绘图要用
+        train_val_data_orig, val_data_orig, test_data_orig = train_data_orig[:8000, :], val_data_orig[:,:-1], test_data_orig[:,:-1]  # 把这个提出来是因为后面绘图要用
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
 
     if config['dataset'] == 'MSL':
-        test_data_orig = np.load('data/MSL/C-1_test.npy')
-        train_data_orig = np.load('data/MSL/C-1_train.npy')
-        labels = np.load('data/MSL/C-1_labels.npy')
+        test_data_orig = np.load(config['test_data_path'])
+        train_data_orig = np.load(config['train_data_path'])
+        labels = np.load(config['label_path'])
         labels = (np.sum(labels, axis=1) >= 1) + 0
 
 if config['model'] == 'AE_basic':
@@ -61,7 +59,7 @@ if config['model'] == 'AE_basic':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         val_data_orig = np.loadtxt(config['val_data_path'], delimiter=',')
-        train_val_data_orig, val_data_orig, test_data_orig = train_data_orig[:6000, :], val_data_orig[:,
+        train_val_data_orig, val_data_orig, test_data_orig = train_data_orig[:8000, :], val_data_orig[:,
                                                                                         :-1], test_data_orig[:, :-1]
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
 
@@ -306,10 +304,10 @@ if config['model'] == 'HSR':
         labels = np.loadtxt(config['label_path'],delimiter=',')
 # %%  设定dataloader
 if config['model'] == 'TranAD':
-    train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'])
-    val_dataloader = DataLoader(val_dataset_w, batch_size=len(val_dataset_w))
-    test_dataloader = DataLoader(test_dataset_W, batch_size=len(test_dataset_W))
-    train_val_dataloader = DataLoader(train_val_dataset_w, batch_size=len(train_val_dataset_w))
+    train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
+    if config['dataset'] =='penism':
+        val_dataloader = DataLoader(val_dataset_w, batch_size=len(val_dataset_w), shuffle=False)
+    test_dataloader = DataLoader(test_dataset_W, batch_size=len(test_dataset_W), shuffle=False)
 if config['model'] == 'AE_basic':
     train_dataloader = DataLoader(train_dataset, batch_size=config['train_batchsize'], shuffle=True)
     val_dataloader = DataLoader(val_dataset, batch_size=len(val_dataset), shuffle=False)
@@ -399,7 +397,6 @@ if config['model'] == 'COUTA':
         np.savetxt('data/MSL/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/MSL/c_copy.csv', delimiter=',')
     c = torch.tensor(c, dtype=torch.float32).to(device)
-#
 if config['model'] == 'HSR':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
     center = HSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
@@ -435,7 +432,8 @@ if config['model'] == 'TranAD':
                                                plot_flag=True, val=False, loss_each_timestamp=True)
     # 这是我自己加的看一下如果是无异常的数据，它的结果会是什么样子
     loss_2 = loss
-    loss_val, y_pred_val = TranAD_tester.tranad_tester(config, model, val_data_orig, val_dataloader, l, device,
+    if config['eval_method'] =='spot':
+        loss_val, y_pred_val = TranAD_tester.tranad_tester(config, model, val_data_orig, val_dataloader, l, device,
                                                        labels=torch.Tensor([0] * 400), train_dataset_flag=True,
                                                        plot_flag=True, val=True, loss_each_timestamp=True)
 if config['model'] == 'AE_basic':
@@ -486,25 +484,45 @@ if config['model'] == 'HSR':
 
 # %%计算threshold同时整理预测值，打印最后结果
 if config['model'] == 'TranAD':
-    l = nn.MSELoss(reduction='none')
-    lossT, _ = TranAD_tester.tranad_tester(config, model, train_val_data_orig, train_val_dataloader, l, device,
-                                           train_dataset_flag=True, plot_flag=False)
-    lossT = np.squeeze(lossT)
-    loss = np.squeeze(loss)
-    lossT_final = np.mean(lossT, axis=1)
-    loss_final = np.mean(loss, axis=1)
-    lt_f, l_f, ls = lossT_final, loss_final, labels  # lt是训练误差，l是测试集误差，ls是label
-    y_pred, label, threshold = pot.pot_eval(config, lt_f, l_f, ls)
-    score = metric.calc_point2point(y_pred, label)
-    # 绘制一下预测的结果：
-    # ploting.prediction_out(y_pred,label,config['model'],config['dataset'])
-    ploting.loss_eachtimestamp_prediction_out(labels, y_pred, loss_2, config['model'], config['dataset'])
+    if config['eval_method'] == 'best_f1':
+        loss = loss.squeeze()
+        scores = np.sum(loss, axis=1)
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        if len(scores) != len(test_data_orig):#因为dataloader的最后有drop_last=True，导致要损失一些数据
+            test_data_orig = test_data_orig[:len(scores)]
+        scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
+        scores_copy = scores
+        labels = labels[:len(scores)]
+        scores = adjust_scores.adjust_scores(labels, scores)
+        eval_info2 = get_metrics.get_best_f1(labels, scores)
+        thred = eval_info2[3]
+        y_pred = np.where(scores >= thred, 1, 0)
+        y_pred_orig = np.where(scores_copy >= thred, 1, 0)
+        ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_data_orig)), labels, config['model'],
+                               config['dataset'])
+        ploting.loss_eachtimestamp_prediction_out(labels, y_pred.reshape(len(test_data_orig)), loss, config['model'],
+                                                  config['dataset'])
+        print(eval_info2, 'f1,precision,recall,threshold')
+    if config['eval_method'] == 'spot':
+        l = nn.MSELoss(reduction='none')
+        lossT, _ = TranAD_tester.tranad_tester(config, model, train_val_data_orig, train_val_dataloader, l, device,
+                                               train_dataset_flag=True, plot_flag=False)
+        lossT = np.squeeze(lossT)
+        loss = np.squeeze(loss)
+        lossT_final = np.mean(lossT, axis=1)
+        loss_final = np.mean(loss, axis=1)
+        lt_f, l_f, ls = lossT_final, loss_final, labels  # lt是训练误差，l是测试集误差，ls是label
+        y_pred, label, threshold = pot.pot_eval(config, lt_f, l_f, ls)
+        score = metric.calc_point2point(y_pred, label)
+        # 绘制一下预测的结果：
+        # ploting.prediction_out(y_pred,label,config['model'],config['dataset'])
+        ploting.loss_eachtimestamp_prediction_out(labels, y_pred, loss_2, config['model'], config['dataset'])
 
-    print(f"f1:{score[0]},\n"
-          f"precision:{score[1]},\n"
-          f"recall:{score[2]},\n"
-          f"ROC/AUC:{score[7]},\n"
-          f"threshold:{threshold}")
+        print(f"f1:{score[0]},\n"
+              f"precision:{score[1]},\n"
+              f"recall:{score[2]},\n"
+              f"ROC/AUC:{score[7]},\n"
+              f"threshold:{threshold}")
 if config['model'] == 'AE_basic':
     l = nn.MSELoss(reduction='none')
     lossT, _ = AE_basic_tester.tester(config, model, train_val_data_orig, train_val_dataloader, l, device,
@@ -549,7 +567,6 @@ if config['model'] == 'COUTA':
     y_pred = np.where(scores >= thred, 1, 0)
     ploting.prediction_out(y_pred, labels, config['model'], config['dataset'])
     print(eval_info2, 'f1,precision,recall,threshold')
-
 if config['model'] == 'HSR':
     if config['eval_method'] == 'best_f1':
         scores = np.sum(loss, axis=1)

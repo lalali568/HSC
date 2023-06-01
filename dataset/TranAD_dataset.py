@@ -44,12 +44,12 @@ class TranADdataset_W(Dataset):
             self.data_list = torch.stack(self.data_list)
         if config['dataset'] == 'MSL':
             if flag=="train":
-                data_orig = np.load('data/MSL/C-1_train.npy')
+                data_orig = np.load(config['train_data_path'])
                 data_orig = torch.tensor(data_orig)
                 feat=data_orig.shape[1]
                 config['feat']=feat
             elif flag == 'test':
-                data_orig = np.load('data/MSL/C-1_test.npy')
+                data_orig = np.load(config['test_data_path'])
                 data_orig = torch.tensor(data_orig)
                 config['test_batchsize']=data_orig.shape[0]
             self.data_list = []

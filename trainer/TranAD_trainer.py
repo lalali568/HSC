@@ -25,8 +25,8 @@ def TranADtrainer(config, model, train_dataloader, optimizer, scheduler, l, devi
             elem = window[-1, :, :].view(1, local_bs, feat)
             z = model(window, elem)#window是windowsize切下来的，elem是整个dataloader里面的完整时序长度
 
-            #l1 = (1 / (e + 1)) * l(z[0], elem) - (1 - 1 / (e + 1)) * l(z[0], elem)
-            l1=l(z,elem)
+            l1 = (1 / (e + 1)) * l(z[0], elem) - (1 - 1 / (e + 1)) * l(z[0], elem)
+            #l1=l(z,elem)
             l1s.append(torch.mean(l1).item())
             loss = torch.mean(l1)
             loss_list.append(loss.item())  # 把误差值进行记录

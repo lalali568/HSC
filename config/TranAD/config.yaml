@@ -1,19 +1,39 @@
 random_seed: 1
 model: 'TranAD'
-dataset: 'penism'
+dataset: MSL
 device: 'cuda'
-train_batchsize: 32
-test_batchsize: 0
-val_batchsize: 0
-train_val_batchsize: 0
-dim_feedforward: 10
-test_data_path: 'data/penism/test_data15.csv'
-val_data_path: "data/penism/val_data1.csv"
-train_data_path: "data/penism/train_data.csv"
-feat: 0
-window_size: 20
-step: 1
-epoch: 100
-learn_rate: 0.001
-nhead: 4
-dropout: 0.1
+penism:
+  train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  train_val_batchsize: 0
+  dim_feedforward: 10
+  test_data_path: data/MSL/T-5_test.npy
+  val_data_path: "data/penism/val_data1.csv"
+  train_data_path: data/MSL/T-5_train.npy
+  feat: 0
+  window_size: 20
+  step: 1
+  epoch: 700
+  learn_rate: 0.001
+  nhead: 4
+  dropout: 0.1
+  eval_method: 'best_f1'
+MSL:
+  train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  train_val_batchsize: 0
+  dim_feedforward: 40
+  test_data_path: data/MSL/T-5_test.npy
+  val_data_path: none
+  train_data_path: data/MSL/T-5_train.npy
+  label_path: data/MSL/T-5_labels.npy
+  feat: 0
+  window_size: 20
+  step: 1
+  epoch: 700
+  learn_rate: 0.001
+  nhead: 4
+  dropout: 0.1
+  eval_method: 'best_f1'

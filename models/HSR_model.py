@@ -21,11 +21,12 @@ class TemporalBlock(nn.Module):
                                dilation=dilation)
         self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size, stride=stride, padding=padding, bias=bias,
                                dilation=dilation)
+
         self.Chomp1d = Chomp1d(padding)  # 这个应该就是为了保证输出的长度和输入的长度一致
         self.dropout = torch.nn.Dropout(dropout)
         self.residual = residual
         self.net = nn.Sequential(self.conv1, Chomp1d(padding), nn.ReLU(), nn.Dropout(dropout),
-                                 self.conv2, Chomp1d(padding), nn.ReLU(), nn.Dropout(dropout))
+                                 self.conv2, Chomp1d(padding), nn.ReLU(), nn.Dropout(dropout),)
         self.downsample = nn.Conv1d(n_inputs, n_outputs, 1) if n_inputs != n_outputs else None
         self.relu = nn.ReLU()
         self.init_weights()
@@ -213,7 +214,7 @@ class GATModel(nn.Module):
     def __init__(self,config,in_features,out_features):
         super(GATModel,self).__init__()
         self.config = config
-        self.conv = GATConv(in_features, out_features, heads=config['num_heads'], dropout=config['dropout'],)
+        self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
         self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
         self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
         self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])

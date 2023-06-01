@@ -1,18 +1,18 @@
 random_seed: 1
 model: 'HSR'
-dataset: SWAT
+dataset: penism
 device: 'cuda'
 batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: 'data/penism/test_data8.csv' 
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
+  train_data_path: data/penism/train_data.csv
   label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -23,13 +23,13 @@ MSL:
   num_heads: 4
   num_transformer_layer: 2
 SMD:
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: 'data/penism/test_data8.csv' 
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
+  train_data_path: data/penism/train_data.csv
   label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -40,13 +40,13 @@ SMD:
   num_heads: 4
   num_transformer_layer: 2
 penism:
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: 'data/penism/test_data8.csv' 
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
+  train_data_path: data/penism/train_data.csv
   label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -57,13 +57,13 @@ penism:
   num_heads: 4
   num_transformer_layer: 2
 SWAT:
-    test_data_path: data/SWAT/test_data.csv
+    test_data_path: 'data/penism/test_data8.csv' 
     val_data_path: None
-    train_data_path: data/SWAT/train_data.csv
+    train_data_path: data/penism/train_data.csv
     label_path: data/SWAT/labels.csv
     window_size: 20
     step: 20
-    epoch: 20
+    epoch: 100
     learn_rate: 0.0001
     dropout: 0.1
     input_dim: 0 #这个在读取数据的时候得到
@@ -74,13 +74,13 @@ SWAT:
     num_heads: 4
     num_transformer_layer: 2
 WADI:
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: 'data/penism/test_data8.csv' 
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
+  train_data_path: data/penism/train_data.csv
   label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
