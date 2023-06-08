@@ -6,7 +6,7 @@ sed -i "s#dataset:.*#dataset: $new_dataset#" config/TranAD/config.yaml
 config_file="config/TranAD/config.yaml"
 
 # 更新yaml文件的变量
-new_epoch=700
+new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 #注释下面的列表
 
@@ -34,13 +34,6 @@ data_paths=(
   'P-15'
   'S-2'
   'T-4'
-  'T-5'
-  'T-8'
-  'T-9'
-  'T-12'
-  'T-13'
-)
-  data_paths=(
   'T-5'
   'T-8'
   'T-9'

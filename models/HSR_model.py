@@ -71,10 +71,11 @@ class Hypersphere(nn.Module):
         self.l1 = nn.Linear(hidden_dims[-1], hidden_dims[-1], bias=True)
         self.l2 = nn.Linear(hidden_dims[-1], hidden_dims[-1], bias=True)
         self.act = torch.nn.LeakyReLU()
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x):
-        out = self.network(x.transpose(2,1)).transpose(2,1)
-        out= self.l2(self.act(self.l1(out)))
+        out = self.network(x.transpose(2, 1)).transpose(2, 1)
+        out = self.l2(self.act(self.l1(out)))
         return out
 
 class transformer_layer(nn.Module):
@@ -116,66 +117,6 @@ class HSR_1(nn.Module):#这个是tcn的版本
         return hypersphere_out
 
 
-
-"""
-class HSR_1(nn.Module):#这个是线性的版本
-    def __init__(self,config):
-        super(HSR_1, self).__init__()
-        self.linear1 = nn.Linear(config['input_dim'], 40, bias=True)
-        self.linear2 = nn.Linear(40, 35, bias=True)
-        self.linear3 = nn.Linear(35, config['input_dim'], bias=True)
-        self.act = torch.nn.LeakyReLU()
-        self.drop_out = nn.Dropout(config['dropout'])
-    def forward(self, x):
-        out = self.linear3(self.drop_out(self.act(self.linear2(self.drop_out(self.act(self.linear1(x)))))))
-        return out
-"""
-"""
-class HSR_2(nn.Module):#这个是transformer的版本
-    def __init__(self,config):
-        super(HSR_2,self).__init__()
-        transformer_layers = []
-        for i in range(config['num_transformer_layer']):
-            transformer_layers.append(transformer_layer(config))
-        self.transformer_layers = nn.Sequential(*transformer_layers)
-    def forward(self, x):
-        transformer_out = self.transformer_layers(x)
-        return transformer_out
-"""
-"""
-class HSR_2(nn.Module):
-    def __init__(self,config):
-        super(HSR_2,self).__init__()
-        self.linear1 = nn.Linear(config['input_dim'], 40, bias=True)
-        self.linear2 = nn.Linear(40, 35, bias=True)
-        #self.linear3 = nn.Linear(35, 51, bias=True)
-        #self.linear4 = nn.Linear(51, 40, bias=True)
-        #self.linear5 = nn.Linear(40, 35, bias=True)
-        self.linear6 = nn.Linear(35, 51, bias=True)
-        self.dropout = nn.Dropout(config['dropout'])
-        self.activation1 = torch.nn.LeakyReLU()
-        self.activation2 = torch.nn.Sigmoid()
-        nn.init.xavier_uniform_(self.linear1.weight)
-        nn.init.zeros_(self.linear1.bias)
-        nn.init.xavier_uniform_(self.linear2.weight)
-        nn.init.zeros_(self.linear2.bias)
-        nn.init.xavier_uniform_(self.linear6.weight)
-        nn.init.zeros_(self.linear6.bias)
-    def forward(self, x):
-        out = self.activation1(self.linear1(x))
-        out = self.dropout(out)
-        out = self.activation1(self.linear2(out))
-        out = self.dropout(out)
-        #out = self.linear3(out)
-       #out = self.activation1(out)
-        #out = self.dropout(out)
-        #out = self.activation1(self.linear4(out))
-        #out = self.dropout(out)
-        #out = self.activation1(self.linear5(out))
-        #out = self.dropout(out)
-        out = self.activation1(self.linear6(out))
-        return out
-    """
 
 class HSR_2(nn.Module):
     def __init__(self,config):

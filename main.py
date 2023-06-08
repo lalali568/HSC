@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/COUTA/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -326,10 +326,10 @@ if config['model'] == 'COUTA':
     config['train_val_batchsize'] = config['batch_size']
     config['val_batchsize'] = config['batch_size']
     train_dataloader = DataLoader(train_dataset, batch_size=config['train_batchsize'], shuffle=True, drop_last=True)
-    val_dataloader = DataLoader(val_dataset, batch_size=config['val_batchsize'], shuffle=False, drop_last=True)
-    test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False, drop_last=True)
-    train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False,
-                                      drop_last=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=config['val_batchsize'], shuffle=False, drop_last=False)
+    test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False, drop_last=False)
+    #train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False,
+    #                                  drop_last=True)
 if config['model'] == 'HSR':
     config['train_batchsize'] = config['batch_size']
     config['test_batchsize'] = config['batch_size']
@@ -561,11 +561,13 @@ if config['model'] == 'GRELEN':
           f"ROC/AUC:{score[7]},\n"
           f"threshold:{threshold}")
 if config['model'] == 'COUTA':
+    scores_copy = scores
     scores = adjust_scores.adjust_scores(labels, scores)
     eval_info2 = get_metrics.get_best_f1(labels, scores)
     thred = eval_info2[3]
     y_pred = np.where(scores >= thred, 1, 0)
-    ploting.prediction_out(y_pred, labels, config['model'], config['dataset'])
+    y_pred_orig = np.where(scores_copy >= thred, 1, 0)
+    ploting.prediction_out(y_pred_orig,y_pred, labels, config['model'], config['dataset'])
     print(eval_info2, 'f1,precision,recall,threshold')
 if config['model'] == 'HSR':
     if config['eval_method'] == 'best_f1':
@@ -575,12 +577,9 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scores + rep_loss
+        scores = scaler.fit_transform((0.8*scores + rep_loss))
         scores_copy = scores
         labels = labels[:len(scores)]
-        max_loss = np.max(loss)
-        min_loss = np.min(loss)
-        loss = (loss - min_loss) / (max_loss - min_loss)
         scores = adjust_scores.adjust_scores(labels, scores)
         eval_info2 = get_metrics.get_best_f1(labels, scores)
         thred = eval_info2[3]
@@ -588,7 +587,7 @@ if config['model'] == 'HSR':
         y_pred_orig = np.where(scores_copy >= thred, 1, 0)
         ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_data_orig)), labels, config['model'],
                                config['dataset'])
-        ploting.loss_eachtimestamp_prediction_out(labels, y_pred.reshape(len(test_data_orig)), loss, config['model'],
+        ploting.loss_eachtimestamp_prediction_out(labels, y_pred.reshape(len(test_data_orig)), scores_copy, config['model'],
                                                   config['dataset'])
         print(eval_info2, 'f1,precision,recall,threshold')
     if config['eval_method'] == 'spot':

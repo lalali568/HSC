@@ -111,10 +111,11 @@ def loss_eachtimestamp_prediction_out(ground,pred,loss,model,dataset,):
     os.makedirs(path, exist_ok=True)
     #处理一下数据
     loss = loss.squeeze()
-    loss=np.sum(loss,axis=1)
-    max_loss = np.max(loss)
-    min_loss =np.min(loss)
-    loss = (loss-min_loss)/(max_loss-min_loss)
+    if loss.ndim!=1:
+        loss=np.sum(loss,axis=1)
+        max_loss = np.max(loss)
+        min_loss =np.min(loss)
+        loss = (loss-min_loss)/(max_loss-min_loss)
     file_name = date_string + '.pdf'
     pdf = PdfPages(os.path.join(path,file_name))
     fig, ax1 = plt.subplots()

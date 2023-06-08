@@ -17,4 +17,4 @@ sed -i "s#epoch:.*#epoch: $new_epoch#" config/HSR/config.yaml
   sed -i "s#train_data_path:.*#train_data_path: $new_train_data_path#" "$config_file"
   sed -i "s#label_path:.*#label_path: $new_label_path#" "$config_file"
 
-  python main.py --model_config_path config/COUTA/config.yaml
+  python main.py --model_config_path config/HSR/config.yaml

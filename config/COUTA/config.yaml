@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'COUTA'
-dataset: 'penism'
+dataset: 'SWAT'
 device: 'cuda'
 batch_size: 32
 neg_batch_size: 6
@@ -10,7 +10,7 @@ window_size: 20
 step: 1
 learn_rate: 0.0001
 dropout: 0.2
-
+epoch: 100
 WADI:
   train_data_path: data/MSL/T-13_train.npy
   test_data_path: data/MSL/T-13_test.npy

@@ -27,6 +27,7 @@ def trainer(config,model1, model, train_dataloader, optimizer, device):
     model1.train()
     loss_hypersphere=[]
     recon_loss = []
+    alpha = config['alpha']
     with tqdm(total=len(train_dataloader) * config['epoch'], unit='batch', leave=True) as pbar:
         for epoch in range(config['epoch']):
             loss_hypersphere_epoch = []
@@ -39,7 +40,7 @@ def trainer(config,model1, model, train_dataloader, optimizer, device):
                 loss_model1 = (torch.mean(torch.sum((rep - c) ** 2, dim=1))-config['radius'])**2
                 loss_model2 = recon_criterion(output, x0)
                 loss_model2 = torch.mean(loss_model2)
-                loss = loss_model1 + loss_model2
+                loss = alpha*loss_model1 + loss_model2
                 loss.backward()
                 optimizer.step()
                 loss_hypersphere.append(loss_model1.item())
