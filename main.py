@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/COUTA/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -34,7 +34,7 @@ device = config['device']
 # %% 设定dataset
 if config['model'] == 'TranAD':
     train_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='train', nosie=False)
-    if config['dataset'] == 'penism':
+    if config['dataset'] == 'penism':#在这个模型中，只有penism有验证集，其他的就没有验证集了
         val_dataset_w = TranAD_dataset.TranADdataset_W(config, flag='val')
     test_dataset_W = TranAD_dataset.TranADdataset_W(config, flag='test')
     if config['dataset'] == 'penism':
@@ -49,6 +49,11 @@ if config['model'] == 'TranAD':
         train_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
         labels = (np.sum(labels, axis=1) >= 1) + 0
+    if config['dataset'] == 'WADI':
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        train_val_data_orig, test_data_orig = train_data_orig, test_data_orig  # 把这个提出来是因为后面绘图要用
+        labels = np.loadtxt(config['label_path'], delimiter=',')
 
 if config['model'] == 'AE_basic':
     train_dataset = AE_basic_dataset.dataset(config, flag='train')
@@ -367,7 +372,7 @@ if config['model'] == 'TranAD':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5, 0.9)
     l = nn.MSELoss(reduction='none')
-    TranAD_trainer.TranADtrainer(config, model, train_dataloader, optimizer, scheduler, l, device)
+    #TranAD_trainer.TranADtrainer(config, model, train_dataloader, optimizer, scheduler, l, device)
 if config['model'] == 'AE_basic':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5, 0.9)
