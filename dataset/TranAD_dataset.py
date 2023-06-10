@@ -78,6 +78,24 @@ class TranADdataset_W(Dataset):
                 else:
                     w = torch.cat([data_orig[0].repeat(config['window_size'] - i, 1), data_orig[0:i]])
                 self.data_list.append(w)
+        if config['dataset'] == 'SMD':
+            if flag=="train":
+                data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+                data_orig = torch.tensor(data_orig)
+                feat=data_orig.shape[1]
+                config['feat']=feat
+            elif flag == 'test':
+                data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+                data_orig = torch.tensor(data_orig)
+                config['test_batchsize']=data_orig.shape[0]
+            self.data_list = []
+
+            for i, g in enumerate(data_orig):
+                if i >= config['window_size']:
+                    w = data_orig[i - config['window_size']:i]
+                else:
+                    w = torch.cat([data_orig[0].repeat(config['window_size'] - i, 1), data_orig[0:i]])
+                self.data_list.append(w)
 
 
     def __getitem__(self, item):

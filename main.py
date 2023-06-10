@@ -54,6 +54,11 @@ if config['model'] == 'TranAD':
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         train_val_data_orig, test_data_orig = train_data_orig, test_data_orig  # 把这个提出来是因为后面绘图要用
         labels = np.loadtxt(config['label_path'], delimiter=',')
+    if config['dataset'] == 'SMD':
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        train_val_data_orig = train_data_orig  # 把这个提出来是因为后面绘图要用
+        labels = np.loadtxt(config['label_path'], delimiter=',')
 
 if config['model'] == 'AE_basic':
     train_dataset = AE_basic_dataset.dataset(config, flag='train')
@@ -372,7 +377,7 @@ if config['model'] == 'TranAD':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5, 0.9)
     l = nn.MSELoss(reduction='none')
-    #TranAD_trainer.TranADtrainer(config, model, train_dataloader, optimizer, scheduler, l, device)
+    TranAD_trainer.TranADtrainer(config, model, train_dataloader, optimizer, scheduler, l, device)
 if config['model'] == 'AE_basic':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, 5, 0.9)
