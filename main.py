@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/GRELEN/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -81,7 +81,6 @@ if config['model'] == 'GRELEN':
     if config['dataset'] == 'SWAT':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
-        # val_data_orig = np.load(config['val_data_path']).squeeze()
         labels = np.loadtxt(config['label_path'], delimiter=',')
 
         res = len(labels) % config['window_size']
@@ -94,7 +93,7 @@ if config['model'] == 'GRELEN':
         train_val_data_orig, test_data_orig = train_data_orig[:config['train_val_len'], :], test_data_orig[:, :-1]
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
         res = len(labels) % config['window_size']
-        labels = labels[:-res]
+        labels = labels[:-res]#去掉最后的label的部分
 
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
@@ -326,7 +325,7 @@ if config['model'] == 'AE_basic':
 if config['model'] == 'GRELEN':
     train_dataloader = DataLoader(train_dataset, batch_size=config['train_batchsize'], shuffle=True)
     # val_dataloader = DataLoader(val_dataset, batch_size=len(val_dataset),shuffle=True)
-    config['test_batchsize'] = config['train_batchsize']
+    config['test_batchsize'] = config['train_batchsize']#设置test_batchsize和train_batchsize都是一样的
     test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False)
     config['train_val_batchsize'] = config['train_batchsize']
     train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False)
