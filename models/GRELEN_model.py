@@ -53,7 +53,10 @@ class Graph_learner(nn.Module):
 
 
     def forward(self,inputs):
+        #这是对inputs进行映射到潜在空间
         X = self.mlp1(inputs)
+
+        #对其进行attention操作，计算不同点与点之间的关系
         Xq = self.Wq(X)
         Xk = self.Wk(X)
         B,N, n_hid= X.shape
@@ -279,14 +282,18 @@ class Grelen(nn.Module):
         B=inputs.shape[0]
         #把inputs变成float32的格式
         inputs = inputs.float()
-        input_projected = self.linear1(inputs.unsqueeze(-1))
+
+        #这个是把输入映射一下。
+        input_projected = self.linear1(inputs.unsqueeze(-1))#在最后增加一个维度，然后再把这个维度扩展到GRU_n_dim
         input_projected  = input_projected.permute(0, 1,3,2)
+
+        #计算prob，这个就是计算节点与节点之间的关系。
         probs = self.graph_learner(inputs)
         mask_loc = torch.eye(self.config['n_node'],dtype=bool).to(self.config['device'])
         probs = probs.masked_select(~mask_loc).view(B,self.config['n_head'],-1).to(self.config['device'])#把构造的图拿出来，把对角线的数据去掉,感觉其实就是把和自己的关系去掉
         prob_reshaped = probs.permute(0,2,1)
         probs=F.softmax(prob_reshaped,dim=-1)
-        edges = F.gumbel_softmax(probs, tau = self.config['gumbel_tau'], hard = True).to(self.config['device'])#会得到四种图
+        edges = F.gumbel_softmax(probs, tau = self.config['gumbel_tau'], hard = True).to(self.config['device'])#这就是在采样，属于四种中的哪一种
 
         adj_list = torch.ones(self.config['n_head'],B,self.config['n_node'],self.config['n_node'],dtype=torch.float32,device=self.config['device'])
         mask = ~torch.eye(self.config['n_node'], dtype=bool).unsqueeze(0).unsqueeze(0).to(self.config['device'])
