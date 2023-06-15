@@ -101,6 +101,13 @@ if config['model'] == 'GRELEN':
         labels = np.loadtxt(config['label_path'],delimiter=',')
         res = len(labels) % config['window_size']
         labels = labels[:-res]
+    if config['dataset'] == 'MSL':
+        test_data_orig = np.load(config['test_data_path'])
+        train_data_orig = np.load(config['train_data_path'])
+        labels = np.load(config['label_path'])
+        labels = (np.sum(labels, axis=1) >= 1) + 0
+        res = len(labels) % config['window_size']
+        labels = labels[:-res]
 
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
