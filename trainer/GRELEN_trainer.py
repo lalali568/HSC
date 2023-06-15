@@ -26,27 +26,29 @@ def trainer(config,model, train_dataloader, optimizer, device):
     log_prior = log_prior.cuda()
     start=time()
     losses = []
-    for epoch in range(config['epoch']):
-        kl_train =[]
-        nll_train =[]
-        for  batch_data in tqdm(train_dataloader, desc='Training epoch ' + str(epoch + 1) + '/' + str(config['epoch'])):
-            batch_data=batch_data.to(device)
-            encoder_inputs = batch_data
-            labels =batch_data[:,:,config['T']-config['target_T']:]
-            optimizer.zero_grad()
-            prob, output = model(encoder_inputs)
-            loss_kl = kl_categorical(torch.mean(prob, 1), log_prior, 1).to(device)
-            loss_nll = nll_gaussian(output, labels, config['variation']).to(device)
-            loss = loss_kl + loss_nll
-            losses.append(loss.item())
-            nll_train.append(loss_nll.item())
-            kl_train.append(loss_kl.item())
-            loss.to(device)
-            loss.backward()
-            optimizer.step()
-        nll_train_ = torch.tensor(nll_train)
-        kl_train_ = torch.tensor(kl_train)
-        print('epoch: %s, kl_train: %.4f, nll_train: %.4f' % (epoch, kl_train_.mean(), nll_train_.mean()))
+    with tqdm(total=len(train_dataloader) * config['epoch'], unit='batch', leave=True) as pbar:
+        for epoch in range(config['epoch']):
+            kl_train =[]
+            nll_train =[]
+            for  batch_data in train_dataloader:
+                batch_data=batch_data.to(device)
+                encoder_inputs = batch_data
+                labels =batch_data[:,:,config['T']-config['target_T']:]
+                optimizer.zero_grad()
+                prob, output = model(encoder_inputs)
+                loss_kl = kl_categorical(torch.mean(prob, 1), log_prior, 1).to(device)
+                loss_nll = nll_gaussian(output, labels, config['variation']).to(device)
+                loss = loss_kl + loss_nll
+                losses.append(loss.item())
+                nll_train.append(loss_nll.item())
+                kl_train.append(loss_kl.item())
+                loss.to(device)
+                loss.backward()
+                optimizer.step()
+                pbar.update(1)
+                pbar.set_description(f"loss_kl:{loss_kl},loss_nll:{loss_nll}")
+
+
     total_time = time() - start
     print('Training time: %.2f' % total_time)
     util.ploting.loss_recored(losses,config['model'],config['dataset'])

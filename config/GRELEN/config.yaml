@@ -10,14 +10,14 @@ penism:
   val_batchsize: 0
   train_val_len: 400
  # dim_feedforward: 10
-  test_data_path: 'data/penism/test_data15.csv' 
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: data/penism/train_data.csv
-  label_path: None
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
@@ -39,14 +39,14 @@ SWAT:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: 'data/SWAT/test_data.csv'
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: 'data/SWAT/train_data.csv'
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
@@ -69,14 +69,14 @@ WADI:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: 'data/WADI/test_data.csv'
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: 'data/WADI/train_data.csv'
-  label_path: data/WADI/label.csv
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
@@ -98,14 +98,14 @@ SMD:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: data/SMD/processed_data/test/machine-1-1.csv
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: data/SMD/processed_data/train/machine-1-1.csv
-  label_path: data/SMD/processed_data/test_label/machine-1-1.csv
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
@@ -127,14 +127,14 @@ MSL:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: data/MSL/C-1_test.npy
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: data/MSL/C-1_train.npy
-  label_path: data/MSL/C-1_labels.npy
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 30
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
