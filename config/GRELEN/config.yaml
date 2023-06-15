@@ -2,6 +2,7 @@ random_seed: 1
 model: 'GRELEN'
 dataset: 'penism'
 device: 'cuda'
+eval_method: "best_f1"
 
 penism:
   train_batchsize: 32
@@ -33,3 +34,5 @@ penism:
   filter_type: 'random'
   prior: [ 0.91,0.03,0.03,0.03 ]
   variation: 1
+swat:
+  train_batchsize: 32

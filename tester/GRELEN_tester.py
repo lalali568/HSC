@@ -38,6 +38,4 @@ def tester(config, model, test_data_orig, test_dataloader, device, plot_flag=Tru
     loss = l(torch.tensor(test_data_recon), torch.tensor(test_data_orig)).numpy()
     if plot_flag:
         ploting.plot_out(test_data_orig, test_data_recon,loss, config['model'], config['dataset'], val=val)
-        if loss_each_timestamp:
-            ploting.record_loss(test_data_orig, test_data_recon, config['model'], config['dataset'], val=val)
     return loss,test_data_recon
