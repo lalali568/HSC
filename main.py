@@ -75,7 +75,6 @@ if config['model'] == 'AE_basic':
 
 if config['model'] == 'GRELEN':
     train_dataset = GRELEN_dataset.dataset(config, flag='train')
-    # val_dataset = GRELEN_dataset.dataset(config,flag='val')
     test_dataset = GRELEN_dataset.dataset(config, flag='test')
     train_val_dataset = GRELEN_dataset.dataset(config, flag='train_val')
     if config['dataset'] == 'SWAT':
@@ -90,6 +89,12 @@ if config['model'] == 'GRELEN':
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
         res = len(labels) % config['window_size']
         labels = labels[:-res]#去掉最后的label的部分
+    if config['dataset'] == 'WADI':
+        test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
+        train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
+        labels = np.loadtxt(config['label_path'],delimiter=',')
+        res = len(labels) % config['window_size']
+        labels = labels[:-res]
 
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
@@ -322,8 +327,6 @@ if config['model'] == 'GRELEN':
     train_dataloader = DataLoader(train_dataset, batch_size=config['train_batchsize'], shuffle=True)
     config['test_batchsize'] = config['train_batchsize']#设置test_batchsize和train_batchsize都是一样的
     test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False)
-    #config['train_val_batchsize'] = config['train_batchsize']
-    #train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False)
 if config['model'] == 'COUTA':
     config['train_batchsize'] = config['batch_size']
     config['test_batchsize'] = config['batch_size']
@@ -382,8 +385,7 @@ if config['model'] == 'GRELEN':
     GRELEN_trainer.trainer(config, model, train_dataloader, optimizer, device)
 if config['model'] == 'COUTA':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
-    c = COUTA_trainer.trainer(config, model, train_dataloader, val_dataloader, optimizer,
-                              device)  # 比较重要的是，这个有一个c后面的tester要用到
+    c = COUTA_trainer.trainer(config, model, train_dataloader, val_dataloader, optimizer,device)  # 比较重要的是，这个有一个c后面的tester要用到
     c_copy = c.cpu().detach().numpy()
     if config['dataset'] == 'SWAT':
         np.savetxt('data/SWAT/c_copy.csv', c_copy, delimiter=',')
