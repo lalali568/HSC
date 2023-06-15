@@ -306,6 +306,7 @@ class Grelen(nn.Module):
             state_for_output[head, ...] = self.encoder(input_projected,adj_list[head+1,...],head)
 
         state_for_output2 = torch.mean(state_for_output, 0).permute(0, 1, 3, 2)
+
         output = self.linear_out(state_for_output2).squeeze(-1)[..., self.config['T']-self.config['target_T']:]
         output = output.permute(0, 2, 1)
 

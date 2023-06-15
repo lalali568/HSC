@@ -552,23 +552,39 @@ if config['model'] == 'AE_basic':
           f"ROC/AUC:{score[7]},\n"
           f"threshold:{threshold}")
 if config['model'] == 'GRELEN':
-    l = nn.MSELoss(reduction='none')
-    lossT, _ = GRELEN_tester.tester(config, model, train_val_data_orig, train_val_dataloader, device, plot_flag=False)
-    lossT = np.squeeze(lossT)
-    loss = np.squeeze(loss)
-    lossT_final = np.mean(lossT, axis=1)
-    loss_final = np.mean(loss, axis=1)
-    lt_f, l_f, ls = lossT_final, loss_final, labels  # lt是训练误差，l是测试集误差，ls是label
-    y_pred, label, threshold = pot.pot_eval(config, lt_f, l_f, ls)
-    score = metric.calc_point2point(y_pred, label)
-    # 绘制一下预测的结果：
-    ploting.prediction_out(y_pred, label, config['model'], config['dataset'])
+    if config['eval_method'] == "best_f1":
+        scores = np.sum(loss, axis=1)
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        if len(scores) != len(test_data_orig):#因为dataloader的最后有drop_last=True，导致要损失一些数据
+            test_data_orig = test_data_orig[:len(scores)]
+        scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
+        scores_copy = scores
+        labels = labels[:len(scores)]
+        scores = adjust_scores.adjust_scores(labels, scores)
+        eval_info2 = get_metrics.get_best_f1(labels, scores)
+        thred = eval_info2[3]
+        y_pred = np.where(scores >= thred, 1, 0)
+        y_pred_orig = np.where(scores_copy >= thred, 1, 0)
+        ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_data_orig)), labels, config['model'],config['dataset'])
+        ploting.loss_eachtimestamp_prediction_out(labels, y_pred.reshape(len(test_data_orig)), loss, config['model'],config['dataset'])
+    if config['eval_method'] == "spot":
+        l = nn.MSELoss(reduction='none')
+        lossT, _ = GRELEN_tester.tester(config, model, train_val_data_orig, train_val_dataloader, device, plot_flag=False)
+        lossT = np.squeeze(lossT)
+        loss = np.squeeze(loss)
+        lossT_final = np.mean(lossT, axis=1)
+        loss_final = np.mean(loss, axis=1)
+        lt_f, l_f, ls = lossT_final, loss_final, labels  # lt是训练误差，l是测试集误差，ls是label
+        y_pred, label, threshold = pot.pot_eval(config, lt_f, l_f, ls)
+        score = metric.calc_point2point(y_pred, label)
+        # 绘制一下预测的结果：
+        ploting.prediction_out(y_pred, label, config['model'], config['dataset'])
 
-    print(f"f1:{score[0]},\n"
-          f"precision:{score[1]},\n"
-          f"recall:{score[2]},\n"
-          f"ROC/AUC:{score[7]},\n"
-          f"threshold:{threshold}")
+        print(f"f1:{score[0]},\n"
+              f"precision:{score[1]},\n"
+              f"recall:{score[2]},\n"
+              f"ROC/AUC:{score[7]},\n"
+              f"threshold:{threshold}")
 if config['model'] == 'COUTA':
     scores_copy = scores
     scores = adjust_scores.adjust_scores(labels, scores)
