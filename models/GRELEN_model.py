@@ -301,7 +301,7 @@ class Grelen(nn.Module):
         adj_list[mask]= edges.permute(2,0,1).flatten()
         state_for_output = torch.zeros(input_projected.shape).to(self.config['device'])
         state_for_output = (state_for_output.unsqueeze(0)).repeat(self.config['n_head'] - 1, 1, 1, 1, 1)
-
+        #现在进入encoder的部分
         for head in range(self.config['n_head']-1):
             state_for_output[head, ...] = self.encoder(input_projected,adj_list[head+1,...],head)
 

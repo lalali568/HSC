@@ -82,15 +82,11 @@ if config['model'] == 'GRELEN':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         labels = np.loadtxt(config['label_path'], delimiter=',')
-
         res = len(labels) % config['window_size']
         labels = labels[:-res]
     if config['dataset'] == 'penism':
-        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')[:,:-1]
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
-        # val_data_orig = np.loadtxt(config['val_data_path'],delimiter=',')
-        # train_val_data_orig,val_data_orig,test_data_orig=train_data_orig[:,:],val_data_orig[:,:-1],test_data_orig[:, :-1]
-        train_val_data_orig, test_data_orig = train_data_orig[:config['train_val_len'], :], test_data_orig[:, :-1]
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
         res = len(labels) % config['window_size']
         labels = labels[:-res]#去掉最后的label的部分
@@ -324,11 +320,10 @@ if config['model'] == 'AE_basic':
     train_val_dataloader = DataLoader(train_val_dataset, batch_size=len(train_val_dataset), shuffle=False)
 if config['model'] == 'GRELEN':
     train_dataloader = DataLoader(train_dataset, batch_size=config['train_batchsize'], shuffle=True)
-    # val_dataloader = DataLoader(val_dataset, batch_size=len(val_dataset),shuffle=True)
     config['test_batchsize'] = config['train_batchsize']#设置test_batchsize和train_batchsize都是一样的
     test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False)
-    config['train_val_batchsize'] = config['train_batchsize']
-    train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False)
+    #config['train_val_batchsize'] = config['train_batchsize']
+    #train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False)
 if config['model'] == 'COUTA':
     config['train_batchsize'] = config['batch_size']
     config['test_batchsize'] = config['batch_size']
@@ -567,7 +562,9 @@ if config['model'] == 'GRELEN':
         y_pred_orig = np.where(scores_copy >= thred, 1, 0)
         ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_data_orig)), labels, config['model'],config['dataset'])
         ploting.loss_eachtimestamp_prediction_out(labels, y_pred.reshape(len(test_data_orig)), loss, config['model'],config['dataset'])
-    if config['eval_method'] == "spot":
+        print(eval_info2, 'f1,precision,recall,threshold')
+    if config['eval_method']=='spot':
+
         l = nn.MSELoss(reduction='none')
         lossT, _ = GRELEN_tester.tester(config, model, train_val_data_orig, train_val_dataloader, device, plot_flag=False)
         lossT = np.squeeze(lossT)
