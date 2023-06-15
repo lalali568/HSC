@@ -20,7 +20,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/GRELEN/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -90,6 +90,12 @@ if config['model'] == 'GRELEN':
         res = len(labels) % config['window_size']
         labels = labels[:-res]#去掉最后的label的部分
     if config['dataset'] == 'WADI':
+        test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
+        train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
+        labels = np.loadtxt(config['label_path'],delimiter=',')
+        res = len(labels) % config['window_size']
+        labels = labels[:-res]
+    if config['dataset'] == 'SMD':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
