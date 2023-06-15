@@ -82,15 +82,11 @@ if config['model'] == 'GRELEN':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         labels = np.loadtxt(config['label_path'], delimiter=',')
-
         res = len(labels) % config['window_size']
         labels = labels[:-res]
     if config['dataset'] == 'penism':
-        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')[:,:-1]
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
-        # val_data_orig = np.loadtxt(config['val_data_path'],delimiter=',')
-        # train_val_data_orig,val_data_orig,test_data_orig=train_data_orig[:,:],val_data_orig[:,:-1],test_data_orig[:, :-1]
-        train_val_data_orig, test_data_orig = train_data_orig[:config['train_val_len'], :], test_data_orig[:, :-1]
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
         res = len(labels) % config['window_size']
         labels = labels[:-res]#去掉最后的label的部分
@@ -384,11 +380,10 @@ if config['model'] == 'AE_basic':
     AE_basic_trainer.trainer(config, model, train_dataloader, optimizer, l, device)
 if config['model'] == 'GRELEN':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
-    #GRELEN_trainer.trainer(config, model, train_dataloader, optimizer, device)
+#    GRELEN_trainer.trainer(config, model, train_dataloader, optimizer, device)
 if config['model'] == 'COUTA':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
-    c = COUTA_trainer.trainer(config, model, train_dataloader, val_dataloader, optimizer,
-                              device)  # 比较重要的是，这个有一个c后面的tester要用到
+    c = COUTA_trainer.trainer(config, model, train_dataloader, val_dataloader, optimizer,device)  # 比较重要的是，这个有一个c后面的tester要用到
     c_copy = c.cpu().detach().numpy()
     if config['dataset'] == 'SWAT':
         np.savetxt('data/SWAT/c_copy.csv', c_copy, delimiter=',')

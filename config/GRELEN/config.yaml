@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'GRELEN'
-dataset: 'penism'
+dataset: penism
 device: 'cuda'
 eval_method: "best_f1"
 
@@ -9,10 +9,10 @@ penism:
   test_batchsize: 0
   val_batchsize: 0
   train_val_len: 400
-  dim_feedforward: 10
-  test_data_path: 'data/penism/test_data1.csv'
+ # dim_feedforward: 10
+  test_data_path: 'data/penism/test_data15.csv' 
   val_data_path: 'None'
-  train_data_path: 'data/penism/train_data.csv'
+  train_data_path: data/penism/train_data.csv
   label_path: None
   feat: 0
   window_size: 30
@@ -36,3 +36,29 @@ penism:
   variation: 1
 swat:
   train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  test_data_path: 'data/penism/test_data15.csv' 
+  val_data_path: 'None'
+  train_data_path: data/penism/train_data.csv
+  label_path: data/SWAT/labels.csv
+  feat: 0
+  window_size: 30
+  step: 1
+  epoch: 1
+  learn_rate: 0.001
+  n_head: 4
+  dropout: 0.1
+
+  GRU_n_dim: 64
+  n_head_dim: 32
+  T: 30
+  target_T: 30
+  graph_learner_n_hid: 20
+  n_node: 16
+  gumbel_tau: 0.5
+  max_diffusion_step: 2
+  n_rnn_layers: 2
+  filter_type: 'random'
+  prior: [ 0.91,0.03,0.03,0.03 ]
+  variation: 1
