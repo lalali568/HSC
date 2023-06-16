@@ -380,7 +380,7 @@ if config['model'] == 'AE_basic':
     AE_basic_trainer.trainer(config, model, train_dataloader, optimizer, l, device)
 if config['model'] == 'GRELEN':
     optimizer = torch.optim.AdamW(model.parameters(), lr=config['learn_rate'], weight_decay=1e-5)
-#    GRELEN_trainer.trainer(config, model, train_dataloader, optimizer, device)
+    GRELEN_trainer.trainer(config, model, train_dataloader, optimizer, device)
 if config['model'] == 'COUTA':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
     c = COUTA_trainer.trainer(config, model, train_dataloader, val_dataloader, optimizer,device)  # 比较重要的是，这个有一个c后面的tester要用到
