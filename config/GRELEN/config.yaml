@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'GRELEN'
-dataset: SWAT
+dataset: MSL
 device: 'cuda'
 eval_method: "best_f1"
 
@@ -10,18 +10,17 @@ penism:
   val_batchsize: 0
   train_val_len: 400
  # dim_feedforward: 10
-  test_data_path: 'data/penism/test_data15.csv' 
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: data/penism/train_data.csv
-  label_path: None
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
-
   GRU_n_dim: 64
   n_head_dim: 32
   T: 30
@@ -38,18 +37,19 @@ SWAT:
   train_batchsize: 32
   test_batchsize: 0
   val_batchsize: 0
-  test_data_path: 'data/SWAT/test_data.csv'
+  train_val_len: 400
+  dim_feedforward: 10
+  test_data_path: data/MSL/C-2_test.npy
   val_data_path: 'None'
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
   feat: 0
   window_size: 30
   step: 1
-  epoch: 1
+  epoch: 50
   learn_rate: 0.001
   n_head: 4
   dropout: 0.1
-
   GRU_n_dim: 64
   n_head_dim: 32
   T: 30
@@ -58,7 +58,95 @@ SWAT:
   n_node: 51
   gumbel_tau: 0.5
   max_diffusion_step: 2
+  n_rnn_layers: 1
+  filter_type: 'random'
+  prior: [ 0.91,0.03,0.03,0.03 ]
+  variation: 1
+
+WADI:
+  train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  train_val_len: 400
+  dim_feedforward: 10
+  test_data_path: data/WADI/test_data.csv
+  val_data_path: 'None'
+  train_data_path: data/WADI/train_data.csv
+  label_path: data/WADI/label.csv
+  feat: 0
+  window_size: 30
+  step: 1
+  epoch: 50
+  learn_rate: 0.001
+  n_head: 4
+  dropout: 0.1
+  GRU_n_dim: 64
+  n_head_dim: 32
+  T: 30
+  target_T: 30
+  graph_learner_n_hid: 20
+  n_node: 127
+  gumbel_tau: 0.5
+  max_diffusion_step: 2
   n_rnn_layers: 2
+  filter_type: 'random'
+  prior: [ 0.91,0.03,0.03,0.03 ]
+  variation: 1
+SMD:
+  train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  train_val_len: 400
+  dim_feedforward: 10
+  test_data_path: data/MSL/C-2_test.npy
+  val_data_path: 'None'
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
+  feat: 0
+  window_size: 30
+  step: 1
+  epoch: 50
+  learn_rate: 0.001
+  n_head: 4
+  dropout: 0.1
+  GRU_n_dim: 64
+  n_head_dim: 32
+  T: 30
+  target_T: 30
+  graph_learner_n_hid: 20
+  n_node: 38
+  gumbel_tau: 0.5
+  max_diffusion_step: 2
+  n_rnn_layers: 1
+  filter_type: 'random'
+  prior: [ 0.91,0.03,0.03,0.03 ]
+  variation: 1
+MSL:
+  train_batchsize: 32
+  test_batchsize: 0
+  val_batchsize: 0
+  train_val_len: 400
+  dim_feedforward: 10
+  test_data_path: data/MSL/C-2_test.npy
+  val_data_path: 'None'
+  train_data_path: data/MSL/C-2_train.npy
+  label_path: data/MSL/C-2_labels.npy
+  feat: 0
+  window_size: 30
+  step: 1
+  epoch: 50
+  learn_rate: 0.001
+  n_head: 4
+  dropout: 0.1
+  GRU_n_dim: 64
+  n_head_dim: 32
+  T: 30
+  target_T: 30
+  graph_learner_n_hid: 20
+  n_node: 55
+  gumbel_tau: 0.5
+  max_diffusion_step: 2
+  n_rnn_layers: 1
   filter_type: 'random'
   prior: [ 0.91,0.03,0.03,0.03 ]
   variation: 1

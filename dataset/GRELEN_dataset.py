@@ -31,6 +31,28 @@ class dataset(Dataset):
                 data = np.loadtxt(config['train_data_path'], delimiter=',')
                 data = data[:config['train_val_len'],:]
                 self.data_list = self.process_test_data(data, config)
+        if config['dataset'] == 'WADI':
+            if flag =="train":
+                data=np.loadtxt(config['train_data_path'],delimiter=',')
+                self.data_list=self.process_train_data(data,config)
+            elif flag == 'test':
+                data= np.loadtxt(config['test_data_path'], delimiter=',')
+                self.data_list = self.process_test_data(data, config)
+        if config['dataset'] == 'SMD':
+            if flag =="train":
+                data=np.loadtxt(config['train_data_path'],delimiter=',')
+                self.data_list=self.process_train_data(data,config)
+            elif flag == 'test':
+                data= np.loadtxt(config['test_data_path'], delimiter=',')
+                self.data_list = self.process_test_data(data, config)
+        if config['dataset'] == 'MSL':
+            if flag =="train":
+                data=np.load(config['train_data_path'])
+                self.data_list=self.process_train_data(data,config)
+            elif flag == 'test':
+                data= np.load(config['test_data_path'])
+                self.data_list = self.process_test_data(data, config)
+
 
     def process_train_data(self,data,config):
         data_list = []

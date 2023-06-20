@@ -298,7 +298,7 @@ class Grelen(nn.Module):
         adj_list = torch.ones(self.config['n_head'],B,self.config['n_node'],self.config['n_node'],dtype=torch.float32,device=self.config['device'])
         mask = ~torch.eye(self.config['n_node'], dtype=bool).unsqueeze(0).unsqueeze(0).to(self.config['device'])
         mask = mask.repeat(self.config['n_head'],B,1,1).to(self.config['device'])
-        adj_list[mask]= edges.permute(2,0,1).flatten()
+        adj_list[mask]= edges.permute(2,0,1).flatten()#这一句具体是什么意思呢
         state_for_output = torch.zeros(input_projected.shape).to(self.config['device'])
         state_for_output = (state_for_output.unsqueeze(0)).repeat(self.config['n_head'] - 1, 1, 1, 1, 1)
         #现在进入encoder的部分
@@ -306,6 +306,7 @@ class Grelen(nn.Module):
             state_for_output[head, ...] = self.encoder(input_projected,adj_list[head+1,...],head)
 
         state_for_output2 = torch.mean(state_for_output, 0).permute(0, 1, 3, 2)
+
         output = self.linear_out(state_for_output2).squeeze(-1)[..., self.config['T']-self.config['target_T']:]
         output = output.permute(0, 2, 1)
 
