@@ -158,12 +158,12 @@ class HSR_2(nn.Module):
 class DRGRU(nn.Module):
     def __init__(self,config):
         super(DRGRU,self).__init__()
-        self.activation = torch.tanh()
+        self._activation = torch.tanh
         self.config = config
         self.device = self.config['device']
         self._num_node = self.config['feat_num']
         self._num_units = self.config['GRU_n_dim']
-        self.max_diffusion_step = self.config['max_diffusion_step']
+        self._max_diffusion_step = self.config['max_diffusion_step']
 
         self._gconv_0 = nn.Linear(self._num_units*2*(self._max_diffusion_step+1), self._num_units*2)
         self._gconv_1 = nn.Linear(self._num_units*2*(self._max_diffusion_step+1), self._num_units*2)
@@ -176,12 +176,12 @@ class DRGRU(nn.Module):
 
     def forward(self,inputs,hx,adj):
         output_size = 2*self._num_units
-        fn = self._gconv_1
-        value =torch.sigmoid(fn(inputs,adj,hx,output_size,bias_stat=1.0))
+        fn = self._gconv
+        value =torch.sigmoid(fn(inputs,adj,hx,output_size,bias_start=1.0))
         value = torch.reshape(value,(-1,self._num_node,output_size))
         r,u = torch.split(tensor=value,split_size_or_sections=self._num_units,dim=-1)
-        r = torch.reshape(r,(-1,self._num_node,self._num_units))
-        u = torch.reshape(u,(-1,self._num_node,self._num_units))
+        r = torch.reshape(r,(-1,self._num_node*self._num_units))
+        u = torch.reshape(u,(-1,self._num_node*self._num_units))
 
         c=self ._gconv_c(inputs,adj,r*hx,self._num_units)
         if self._activation is not None:
@@ -206,8 +206,8 @@ class DRGRU(nn.Module):
         adj_mx1 = self._calculate_random_walk0(adj_mx.permute(0, 2, 1), B)#感觉这个有点像D0和D1
 
         batch_size = inputs.shape[0]
-        inputs = torch.reshape(inputs, (batch_size, self._num_nodes, -1))
-        state = torch.reshape(state, (batch_size, self._num_nodes, -1))
+        inputs = torch.reshape(inputs, (batch_size, self._num_node, -1))
+        state = torch.reshape(state, (batch_size, self._num_node, -1))
         inputs_and_state = torch.cat([inputs, state], dim=2)
         input_size = inputs_and_state.size(2)
 
@@ -239,13 +239,13 @@ class DRGRU(nn.Module):
 
         x0_0 = x0_0.permute(1, 2, 3, 0)  # [3, 90, 128]
         x1_0 = x1_0.permute(1, 2, 3, 0)  # [3, 90, 128]
-        x0_0 = torch.reshape(x0_0, shape=[batch_size * self._num_nodes, input_size * num_matrices])
-        x1_0 = torch.reshape(x1_0, shape=[batch_size * self._num_nodes, input_size * num_matrices])
+        x0_0 = torch.reshape(x0_0, shape=[batch_size * self._num_node, input_size * num_matrices])
+        x1_0 = torch.reshape(x1_0, shape=[batch_size * self._num_node, input_size * num_matrices])
 
         x0_0 = self._gconv_0(x0_0)
         x1_0 = self._gconv_1(x1_0)
 
-        return torch.reshape(x0_0 + x1_0, [batch_size, self._num_nodes * output_size])
+        return torch.reshape(x0_0 + x1_0, [batch_size, self._num_node * output_size])
 
     def _gconv_c(self, inputs, adj_mx, state, output_size, bias_start=0.0):
         B = inputs.shape[0]
@@ -254,8 +254,8 @@ class DRGRU(nn.Module):
         adj_mx1 = self._calculate_random_walk0(adj_mx.permute(0, 2, 1), B)
 
         batch_size = inputs.shape[0]
-        inputs = torch.reshape(inputs, (batch_size, self._num_nodes, -1))
-        state = torch.reshape(state, (batch_size, self._num_nodes, -1))
+        inputs = torch.reshape(inputs, (batch_size, self._num_node, -1))
+        state = torch.reshape(state, (batch_size, self._num_node, -1))
         inputs_and_state = torch.cat([inputs, state], dim=2)
         input_size = inputs_and_state.size(2)
 
@@ -284,12 +284,12 @@ class DRGRU(nn.Module):
         x0_0 = x0_0.permute(1, 2, 3, 0)
         x1_0 = x1_0.permute(1, 2, 3, 0)
 
-        x0_0 = torch.reshape(x0_0, shape=[batch_size * self._num_nodes, input_size * num_matrices])
-        x1_0 = torch.reshape(x1_0, shape=[batch_size * self._num_nodes, input_size * num_matrices])
+        x0_0 = torch.reshape(x0_0, shape=[batch_size * self._num_node, input_size * num_matrices])
+        x1_0 = torch.reshape(x1_0, shape=[batch_size * self._num_node, input_size * num_matrices])
         x0_0 = self._gconv_c_0(x0_0)
         x1_0 = self._gconv_c_1(x1_0)
 
-        return torch.reshape(x0_0 + x1_0, [batch_size, self._num_nodes * output_size])
+        return torch.reshape(x0_0 + x1_0, [batch_size, self._num_node * output_size])
 
 
 class Graph_learner(nn.Module):
@@ -327,13 +327,13 @@ class EncoderModel(nn.Module):
         self.config = config
         self.device = config['device']
         self.input_dim = config['GRU_n_dim']
-        self.rnn_units =config['GRU_n_him']
+        self.rnn_units =config['GRU_n_dim']
         self.max_diffusion_step = config['max_diffusion_step']
         self.num_nodes = config['feat_num']
         self.num_rnn_layers = config['num_rnn_layers']
         self.hidden_state_size = self.num_nodes * self.rnn_units
-        self.dcgru_layer = nn.ModuleList([DRGRU(self.input_dim, self.rnn_units, self.num_nodes, self.max_diffusion_step, self.device) for _ in range(self.num_rnn_layers)])
-        self.linear_out = nn.Linear(self.GRU_n_dim,1)
+        self.dcgru_layer = nn.ModuleList([DRGRU(self.config) for _ in range(self.num_rnn_layers)])
+        self.linear_out = nn.Linear(self.config['GRU_n_dim'],1)
     def forward(self,input,adj,hidden_state=None):
         batch_size = input.shape[0]
         if hidden_state is None:
@@ -341,7 +341,7 @@ class EncoderModel(nn.Module):
         hidden_states = []
         output = input
         for layer_num, dcgru_layer in enumerate(self.dcgru_layer):
-            next_hidden_state = dcgru_layer(output, hidden_states[layer_num],adj)
+            next_hidden_state = dcgru_layer(output, hidden_state[layer_num],adj)
             hidden_states.append(next_hidden_state)
             output = next_hidden_state
 
@@ -351,21 +351,23 @@ class HSR_2(nn.Module):
         super(HSR_2,self).__init__()
         self.config = config
         self.Graph_learner = Graph_learner(config)
-        self.linear_map = nn.Linear(1, config['drgru_dim'], bias=True)
+        self.linear_map = nn.Linear(1, config['GRU_n_dim'], bias=True)
         self.encoder_model = EncoderModel(self.config)
         self.num_node = self.config['feat_num']
+        self.linear_out = nn.Linear(self.config['GRU_n_dim'],1)
     def forward(self,x,hidden_state=None):
-        #首先学习图给下面的Grelen使用
+        #首先学习图给下面的图使用
         batch_size = x.size(0)
         x = x.permute(0, 2, 1)
         adj = self.Graph_learner(x)
+        adj= adj.repeat(batch_size,1,1)
         #然后使用DCGRU
         x_projected=self.linear_map(x.unsqueeze(-1))
-        x_projected=x_projected.permute(0,3,2,1)
-        state_for_output = torch.zeros(x_projected)
-        state_for_output=self.encoder(x_projected,adj)
+        x_projected=x_projected.permute(0,1,3,2)
+        state_for_output = torch.zeros(x_projected.size()).to(self.config['device'])
+        state_for_output[...]=self.encoder(x_projected,adj)
 
-        output = self.linear_out(state_for_output).squeeze(-1)
+        output = self.linear_out(state_for_output.permute(0,1,3,2)).squeeze(-1)
         output = output.permute(0,2,1)
 
         return output
@@ -373,9 +375,9 @@ class HSR_2(nn.Module):
     def encoder(self,input,adj):
         encoder_hidden_state=None
         encoder_hidden_state_tensor = torch.zeros(input.shape).to(self.config['device'])
-        for t in range(input.shape[1]):
+        for t in range(input.shape[-1]):
             _,encoder_hidden_state = self.encoder_model(input[...,t],adj,encoder_hidden_state)
-            encoder_hidden_state_tensor[...,t] = encoder_hidden_state[-1,...].reshape(-1,self.num_nodes,self.config['drgru_dim'])
+            encoder_hidden_state_tensor[...,t] = encoder_hidden_state[-1,...].reshape(-1,self.num_node,self.config['GRU_n_dim'])
         return encoder_hidden_state_tensor
 
 
