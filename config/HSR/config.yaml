@@ -63,10 +63,10 @@ penism:
   #下面加的就是我在改变decoder后使用的参数，还是尝试阶段
   graph_head: 4
   graph_threshold: 0.5
-  num_dcgru_layers: 1
+  num_rnn_layers: 1
   feat_num: 16
   max_diffusion_step: 2
-  drgru_dim: 32
+  GRU_n_dim: 32
 SWAT:
     alpha: 1
     test_data_path: data/MSL/T-13_test.npy
