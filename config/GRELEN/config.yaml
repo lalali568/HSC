@@ -69,10 +69,10 @@ WADI:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: data/WADI/test_data.csv
   val_data_path: 'None'
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/WADI/train_data.csv
+  label_path: data/WADI/label.csv
   feat: 0
   window_size: 30
   step: 1
@@ -88,7 +88,7 @@ WADI:
   n_node: 127
   gumbel_tau: 0.5
   max_diffusion_step: 2
-  n_rnn_layers: 1
+  n_rnn_layers: 2
   filter_type: 'random'
   prior: [ 0.91,0.03,0.03,0.03 ]
   variation: 1

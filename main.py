@@ -27,8 +27,6 @@ with open('config/GRELEN/config.yaml', 'r', encoding='utf-8') as f:
 # 固定随机数
 Set_Seed.__setseed__(config['random_seed'])
 
-# 设定device
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 device = config['device']
 
 # %% 设定dataset

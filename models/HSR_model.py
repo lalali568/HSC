@@ -117,7 +117,23 @@ class HSR_1(nn.Module):#这个是tcn的版本
         return hypersphere_out
 
 
-
+"""
+#这是HSR_2使用GAT的版本
+#%%让我试一下用GAT作为后面的decoder
+class GATModel(nn.Module):
+    def __init__(self,config,in_features,out_features):
+        super(GATModel,self).__init__()
+        self.config = config
+        self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
+        self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
+        self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
+        self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])
+    def forward(self,x):
+        x= x.view(-1,x.size(-1))
+        x = self.conv(x, self.edge_index)
+        x = self.lin(x)
+        x=x.view(-1,self.config['window_size'],self.config['input_dim'])
+        return x
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()
@@ -137,6 +153,79 @@ class HSR_2(nn.Module):
         out = self.gat2(out)
         out = self.leaky(self.lin2(out))
         return out
+"""
+
+class DRGRU(nn.Module):
+    def __init__(self,config):
+        super(DRGRU,self).__init__()
+        self.activation = torch.tanh()
+        self.config = config
+        self.device = self.config['device']
+        self._num_node = self.config['feat_num']
+        self.max_diffusion_step = self.config['max_diffusion_step']
+
+        self._gconv_0 = nn.Linear()
+
+    def forward(self,x,graph):
+        return x
+
+class Graph_learner(nn.Module):
+    def __init__(self,config):
+        super(Graph_learner,self).__init__()
+        self.config = config
+        self.graph_head = self.config['graph_head']
+        self.mlp1= nn.Linear(config['window_size'], config['window_size'], bias=True)#这一步是把时间维度进行一个映射
+        self.Wq= nn.Linear(config['window_size'], config['window_size']*self.graph_head, bias=True)
+        self.Wk = nn.Linear(config['window_size'], config['window_size']*self.graph_head, bias=True)
+        for m in [self.Wq,self.Wk,self.mlp1]:
+            nn.init.xavier_uniform_(m.weight)
+            nn.init.constant_(m.bias, 0.0)
+        self.activation = nn.LeakyReLU()
+    def forward(self,x):
+        B= x.size(0)
+        x = self.activation(self.mlp1(x))
+        Q = self.Wq(x)
+        K = self.Wk(x)
+        Q = Q.view(B,self.graph_head,-1,self.config['window_size'])
+        K = K.view(B,self.graph_head,-1,self.config['window_size'])
+        graph = torch.matmul(Q,K.permute(0,1,3,2))
+        graph=graph.sum(dim=(0,1))
+        graph = self.guiyihua(graph)
+        return graph
+    def guiyihua(self,matrix):
+        matrix = matrix - torch.min(matrix)
+        matrix = matrix / torch.max(matrix)
+        return matrix
+
+
+class EncoderModel(nn.Module):
+    def __init__(self,config):
+        super(EncoderModel,self).__init__()
+        self.config = config
+        self.device = config['device']
+        self.input_dim = config['GRU_n_dim']
+class HSR_2(nn.Module):
+    def __init__(self,config):
+        super(HSR_2,self).__init__()
+        self.config = config
+        self.Graph_learner = Graph_learner(config)
+        self.drgru_layer = nn.ModuleList([DRGRU(config) for _ in range(config['num_dcgru_layers'])])
+        self.linear_map = nn.Linear(1, config['drgru_dim'], bias=True)
+        self.encoder_model = EncoderModel(self.config)
+    def forward(self,x,hidden_state=None):
+        #首先学习图给下面的Grelen使用
+        batch_size = x.size(0)
+        x = x.permute(0, 2, 1)
+        adj = self.Graph_learner(x)
+        #然后使用DCGRU
+        x_projected=self.linear_map(x.unsqueeze(-1))
+        x_projected=x_projected.permute(0,3,2,1)
+        state_for_output = torch.zeros(x_projected)
+        state_for_output=self.encoder(x_projected,adj)
+
+    def encoder(self,input,adj):
+
+
 
 class HSR(nn.Module):
     def __init__(self,config):
@@ -150,18 +239,4 @@ class HSR(nn.Module):
         return rep,decoder_out
 
 
-#%%让我试一下用GAT作为后面的decoder
-class GATModel(nn.Module):
-    def __init__(self,config,in_features,out_features):
-        super(GATModel,self).__init__()
-        self.config = config
-        self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
-        self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
-        self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
-        self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])
-    def forward(self,x):
-        x= x.view(-1,x.size(-1))
-        x = self.conv(x, self.edge_index)
-        x = self.lin(x)
-        x=x.view(-1,self.config['window_size'],self.config['input_dim'])
-        return x
+
