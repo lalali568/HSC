@@ -107,7 +107,8 @@ if config['model'] == 'GRELEN':
         labels = np.load(config['label_path'])
         labels = (np.sum(labels, axis=1) >= 1) + 0
         res = len(labels) % config['window_size']
-        labels = labels[:-res]
+        if res!=0:
+            labels = labels[:-res]
 
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
