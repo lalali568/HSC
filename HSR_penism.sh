@@ -26,13 +26,13 @@ run_test_data() {
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 405
-    comment_lines 406
-    comment_lines 411
+    comment_lines 420
+    comment_lines 421
+    comment_lines 426
   elif [[ $1 -eq 15 ]]; then
-    uncomment_lines 405
-    uncomment_lines 406
-    uncomment_lines 411
+    uncomment_lines 420
+    uncomment_lines 421
+    uncomment_lines 426
   fi
 }
 
@@ -43,7 +43,7 @@ execute_iterations() {
   local toggle_flag=$3
 
   for ((i = start_index; i <= end_index; i++)); do
-    new_test_data_path="'data/penism/test_data$i\_2.csv'"
+    new_test_data_path="'data/penism/test_data$i.csv'"
     run_test_data "$new_test_data_path"
     toggle_training_code $toggle_flag
   done
