@@ -360,6 +360,9 @@ class HSR_2(nn.Module):
         batch_size = x.size(0)
         x = x.permute(0, 2, 1)
         adj = self.Graph_learner(x)
+        #把大于0.5的部分设为1，否则就是0
+        adj[adj>self.config['graph_threshold']]=1
+        adj[adj<=self.config['graph_threshold']]=0
         adj= adj.repeat(batch_size,1,1)
         #然后使用DCGRU
         x_projected=self.linear_map(x.unsqueeze(-1))
