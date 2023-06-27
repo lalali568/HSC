@@ -7,7 +7,7 @@ sed -i "s#epoch:.*#epoch: $new_epoch#" config/COUTA/config.yaml
 
 #第一次
 
-new_test_data_path="'data/penism/test_data1.csv'"
+new_test_data_path="'data/penism/test_data1_3.csv'"
 sed -i "s#test_data_path:.*#test_data_path: $new_test_data_path#" config/COUTA/config.yaml
 
 python main.py --model_config_path config/COUTA/config.yaml
