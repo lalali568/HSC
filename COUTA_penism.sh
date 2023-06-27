@@ -2,7 +2,7 @@
 
 #更新yaml文件的变量
 
-new_epoch=10
+new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/COUTA/config.yaml
 
 #第一次

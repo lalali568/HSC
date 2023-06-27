@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'COUTA'
-dataset: 'SWAT'
+dataset: 'penism'
 device: 'cuda'
 batch_size: 32
 neg_batch_size: 6
@@ -10,7 +10,7 @@ window_size: 20
 step: 1
 learn_rate: 0.0001
 dropout: 0.2
-epoch: 10
+epoch: 100
 WADI:
   train_data_path: data/penism/train_data_3.csv
   test_data_path: 'data/penism/test_data1_3.csv'
@@ -72,7 +72,7 @@ MSL:
   ss_type: 'Full'
   alpha: 0.5
 penism:
-  epoch: 10
+  epoch: 100
   train_data_path: data/penism/train_data_3.csv
   test_data_path: 'data/penism/test_data1_3.csv'
   label_path: None
