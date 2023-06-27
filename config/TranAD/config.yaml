@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'TranAD'
-dataset: SMD
+dataset: penism
 device: 'cuda'
 penism:
   train_batchsize: 32
@@ -8,9 +8,9 @@ penism:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 10
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data1_3.csv' 
   val_data_path: "data/penism/val_data1.csv"
-  train_data_path: data/MSL/T-13_train.npy
+  train_data_path: data/penism/train_data_3.csv
   feat: 0
   window_size: 20
   step: 1
@@ -25,9 +25,9 @@ MSL:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 40
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data1_3.csv' 
   val_data_path: none
-  train_data_path: data/MSL/T-13_train.npy
+  train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
   feat: 0
   window_size: 20
@@ -43,14 +43,14 @@ WADI:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 100
-  test_data_path: data/WADI/test_data.csv
+  test_data_path: 'data/penism/test_data1_3.csv' 
   val_data_path: none
-  train_data_path: data/WADI/train_data.csv
+  train_data_path: data/penism/train_data_3.csv
   label_path: data/WADI/label.csv
   feat: 0
   window_size: 20
   step: 1
-  epoch: 70
+  epoch: 100
   learn_rate: 0.001
   nhead: 4
   dropout: 0.1
@@ -61,9 +61,9 @@ SMD:
     val_batchsize: 0
     train_val_batchsize: 0
     dim_feedforward: 40
-    test_data_path: data/SMD/processed_data/test/machine-1-1.csv
+    test_data_path: 'data/penism/test_data1_3.csv' 
     val_data_path: none
-    train_data_path: data/SMD/processed_data/train/machine-1-1.csv
+    train_data_path: data/penism/train_data_3.csv
     label_path: data/SMD/processed_data/test_label/machine-1-1.csv
     feat: 0
     window_size: 20

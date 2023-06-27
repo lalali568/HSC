@@ -5,7 +5,7 @@ sed -i "s#dataset:.*#dataset: $new_dataset#" config/TranAD/config.yaml
 new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/TranAD/config.yaml
 
-new_train_data=data/penism/train_data.csv
+new_train_data=data/penism/train_data_3.csv
 sed -i "s#train_data_path:.*#train_data_path: $new_train_data#" config/TranAD/config.yaml
 # 注释和取消注释训练的代码
 comment_lines() {
@@ -26,9 +26,9 @@ run_test_data() {
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 370
+    comment_lines 389
   elif [[ $1 -eq 15 ]]; then
-    uncomment_lines 370
+    uncomment_lines 389
   fi
 }
 
@@ -39,7 +39,7 @@ execute_iterations() {
   local toggle_flag=$3
 
   for ((i = start_index; i <= end_index; i++)); do
-    new_test_data_path="'data/penism/test_data$i.csv'"
+    new_test_data_path="'data/penism/test_data$i\_3.csv'"
     run_test_data "$new_test_data_path"
     toggle_training_code $toggle_flag
   done

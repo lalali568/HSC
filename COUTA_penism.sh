@@ -19,7 +19,7 @@ python main.py --model_config_path config/COUTA/config.yaml
 #如果是penism的数据集，注释掉第196,197,202
 sed -i "400s/^/#/" main.py
 sed -i "401s/^/#/" main.py
-sed -i "407s/^/#/" main.py
+sed -i "406s/^/#/" main.py
 #第二次
 new_test_data_path="'data/penism/test_data2_3.csv'"
 sed -i "s#test_data_path:.*#test_data_path: $new_test_data_path#" config/COUTA/config.yaml
@@ -79,5 +79,5 @@ python main.py --model_config_path config/COUTA/config.yaml
 #再改回来train的代码
 sed -i "400s/^#//" main.py
 sed -i "401s/^#//" main.py
-sed -i "407s/^#//" main.py
+sed -i "406s/^#//" main.py
 

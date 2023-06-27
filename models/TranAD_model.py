@@ -37,6 +37,7 @@ class TransformerEncoderLayer(nn.Module):
 
 
     def forward(self, src,is_causal=None,src_mask=None, src_key_padding_mask=None):
+        self.layer_norm = nn.BatchNorm1d(src.shape[1]).to(self.config['device'])
         src2 = self.self_attn(src, src, src)[0]
         src = self.layer_norm(src + self.dropout1(src2))
         src2 = self.linear2(self.dropout(self.activation(self.linear1(src))))
@@ -56,15 +57,16 @@ class TransformerDecoderLayer(nn.Module):
         self.dropout3 = nn.Dropout(dropout)
         self.config=config
         self.activation = nn.LeakyReLU(True)
-        #这里是自己加上的layer_norm
-        self.layer_norm=nn.LayerNorm(d_model)
+
+
 
 
     def forward(self, tgt, memory, tgt_mask=None, memory_mask=None, tgt_key_padding_mask=None, memory_key_padding_mask=None):
+        self.layer_norm = nn.BatchNorm1d(tgt.shape[1]).to(self.config['device'])
         tgt2 = self.self_attn(tgt, tgt, tgt)[0]
         tgt = self.layer_norm(tgt + self.dropout1(tgt2))
         tgt2 = self.multihead_attn(tgt, memory, memory)[0]
-        tgt = tgt + self.dropout2(tgt2)
+        tgt = self.layer_norm(tgt + self.dropout2(tgt2))
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt))))
         tgt = tgt + self.dropout3(tgt2)
         return tgt
