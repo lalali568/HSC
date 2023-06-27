@@ -5,7 +5,7 @@ sed -i "s#dataset:.*#dataset: $new_dataset#" config/HSR/config.yaml
 
 config_file="config/HSR/config.yaml"
 # 更新yaml文件的变量
-new_epoch=80
+new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/HSR/config.yaml
 
 # 定义需要重复的数据路径列表

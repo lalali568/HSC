@@ -38,7 +38,7 @@ SMD:
   hidden_dim: [ 38 ]
   kernel_size: 3
   tcn_bias: 1
-  radius: 7
+  radius: 10
   num_heads: 4
   num_transformer_layer: 2
 penism:
@@ -96,7 +96,7 @@ WADI:
   test_data_path: 'data/penism/test_data15_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
-  label_path: data/MSL/T-13_labels.npy
+  label_path: data/WADI/label.csv
   window_size: 20
   step: 20
   epoch: 100
