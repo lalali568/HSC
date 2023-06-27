@@ -1,19 +1,19 @@
 random_seed: 1
 model: HSR
-dataset: SWAT
+dataset: penism
 device: 'cuda'
 batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data15_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
+  train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 700
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -25,13 +25,13 @@ MSL:
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data15_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
+  train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 700
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -43,13 +43,13 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: data/penism/test_data1.csv
+  test_data_path: 'data/penism/test_data15_3.csv' 
   val_data_path: None
-  train_data_path: data/penism/train_data.csv
-  label_path: None
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 12
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -62,20 +62,20 @@ penism:
 
   #下面加的就是我在改变decoder,使用drgru之后添加的参数，还是尝试阶段
   graph_head: 4
-  graph_threshold: 0.3
+  graph_threshold: 0.5
   num_rnn_layers: 1
   feat_num: 16
   max_diffusion_step: 2
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: data/SWAT/test_data.csv
+    test_data_path: 'data/penism/test_data15_3.csv' 
     val_data_path: None
-    train_data_path: data/SWAT/train_data.csv
-    label_path: data/SWAT/labels.csv
+    train_data_path: data/penism/train_data_3.csv
+    label_path: data/MSL/T-13_labels.npy
     window_size: 20
     step: 20
-    epoch: 1
+    epoch: 100
     learn_rate: 0.0001
     dropout: 0.5
     input_dim: 0 #这个在读取数据的时候得到
@@ -93,13 +93,13 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data15_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
+  train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 700
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
