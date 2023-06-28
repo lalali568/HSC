@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'GRELEN'
-dataset: MSL
+dataset: WADI
 device: 'cuda'
 eval_method: "best_f1"
 

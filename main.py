@@ -11,7 +11,7 @@ from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, p
     adjust_scores
 from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset
 from torch.utils.data import DataLoader
-from models import TranAD_model_modified1 as TranAD_model
+from models import TranAD_model as TranAD_model
 from models import HSR_model_2 as HSR_model
 from models import AE_basic, GRELEN_model, COUTA_model
 from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer
@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -93,7 +93,8 @@ if config['model'] == 'GRELEN':
         train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
         res = len(labels) % config['window_size']
-        labels = labels[:-res]
+        if res != 0:
+            labels = labels[:-res]
     if config['dataset'] == 'SMD':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
@@ -417,8 +418,8 @@ if config['model'] == 'COUTA':
     c = torch.tensor(c, dtype=torch.float32).to(device)
 if config['model'] == 'HSR':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
-    center = HSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
-    c_copy = center.cpu().detach().numpy()
+    #center = HSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
+    #c_copy = center.cpu().detach().numpy()
     if config['dataset'] == 'MSL':
         np.savetxt('data/MSL/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/MSL/c_copy.csv', delimiter=',')
@@ -432,7 +433,7 @@ if config['model'] == 'HSR':
         np.savetxt('data/SMD/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/SMD/c_copy.csv', delimiter=',')
     if config['dataset'] == 'WADI':
-        np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
+        #np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/WADI/c_copy.csv', delimiter=',')
     c = torch.tensor(c, dtype=torch.float32).to(device)
 
@@ -613,7 +614,7 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scaler.fit_transform((0.8*scores + rep_loss))
+        scores = scaler.fit_transform((config['alpha']*scores + rep_loss))
         scores_copy = scores
         labels = labels[:len(scores)]
         scores = adjust_scores.adjust_scores(labels, scores)

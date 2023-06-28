@@ -55,9 +55,9 @@ class TemporalBlock(nn.Module):
                                dilation=dilation)
         self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size, stride=stride, padding=padding, bias=bias,
                                dilation=dilation)
-
-        self.conv3 = nn.Conv1d(n_inputs, n_outputs, kernel_size, stride=stride, padding=padding, bias=bias,
+        self.conv3 = nn.Conv1d(n_outputs, n_outputs, kernel_size, stride=stride, padding=padding, bias=bias,
                                dilation=dilation)
+
         self.Chomp1d = Chomp1d(padding)  # 这个应该就是为了保证输出的长度和输入的长度一致
         self.dropout = torch.nn.Dropout(dropout)
         self.residual = residual
@@ -111,7 +111,8 @@ class Hypersphere(nn.Module):
 
     def forward(self, x):
         out = self.network(x.transpose(2, 1)).transpose(2, 1)
-        out = self.l2(self.act(self.l1(out)))
+        out = self.l2(self.act((self.l1(out))))
+
         return out
 
 

@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../GDN-main/.idea/GDN-main.iml" filepath="$PROJECT_DIR$/../GDN-main/.idea/GDN-main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/best_pipline.iml" filepath="$PROJECT_DIR$/.idea/best_pipline.iml" />
     </modules>
   </component>
