@@ -25,10 +25,10 @@ MSL:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 40
-  test_data_path: data/MSL/F-8_test.npy
+  test_data_path: 'data/penism/test_data1_3.csv' 
   val_data_path: none
-  train_data_path: data/MSL/F-8_train.npy
-  label_path: data/MSL/F-8_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/MSL/T-13_labels.npy
   feat: 0
   window_size: 20
   step: 1
@@ -43,10 +43,10 @@ WADI:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 100
-  test_data_path: data/MSL/F-8_test.npy
+  test_data_path: 'data/penism/test_data1_3.csv' 
   val_data_path: none
-  train_data_path: data/MSL/F-8_train.npy
-  label_path: data/MSL/F-8_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/WADI/label.csv
   feat: 0
   window_size: 20
   step: 1
@@ -61,10 +61,10 @@ SMD:
     val_batchsize: 0
     train_val_batchsize: 0
     dim_feedforward: 40
-    test_data_path: data/MSL/F-8_test.npy
+    test_data_path: 'data/penism/test_data1_3.csv' 
     val_data_path: none
-    train_data_path: data/MSL/F-8_train.npy
-    label_path: data/MSL/F-8_labels.npy
+    train_data_path: data/penism/train_data_3.csv
+    label_path: data/SMD/processed_data/test_label/machine-1-1.csv
     feat: 0
     window_size: 20
     step: 1
