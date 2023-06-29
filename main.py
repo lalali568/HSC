@@ -6,7 +6,7 @@ import random
 import torch
 import os
 import argparse
-from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester
+from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester,SSHSR_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
     adjust_scores,produce_train_target_data
 from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset
@@ -337,6 +337,9 @@ if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面�
         test_data = test_data_orig[:, :-1]  # 这是如果test是penism的话最后一行是label，所以要去掉
         test_data = slice_windows_data.process_data(test_data, config, step=config['base_length'])
         test_dataset = SSHSR_dataset.dataset(config, test_data)
+        test_data_reverse = np.flipud(test_data_orig)[:,:-1]#将test_data_orig倒序
+        test_data_reverse = slice_windows_data.process_data(test_data_reverse, config, step=config['base_length'])
+        test_reverse_dataset = SSHSR_dataset.dataset(config, test_data_reverse)
 
         train_data = produce_train_target_data.process_train_data(train_data_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
         train_target_data = produce_train_target_data.process_target_data(train_data_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
@@ -389,6 +392,7 @@ if config['model'] == 'SSHSR':
     batch_size = config['batch_size']
     train_plus_target_dataloader=DataLoader(train_plus_target_dataset, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+    test_reverse_dataloader = DataLoader(test_reverse_dataset, batch_size=batch_size, shuffle=False)
 # %% 设定model
 if config['model'] == 'TranAD':
     model = TranAD_model.TranAD(config)
@@ -537,7 +541,16 @@ if config['model'] == 'HSR':
     model.eval()
     loss, rep_loss, reps = HSR_tester.tester(config, model, test_data_orig, test_dataloader, device, labels, c,
                                              plot_flag=True)
-
+if config['model'] == 'SSHSR':
+    fname = 'checkpoints/SSHSR_' + config['dataset'] + '/model.ckpt'
+    checkpoints = torch.load(fname)
+    model = SSHSR_model.SSHSR(config)
+    model.load_state_dict(checkpoints['model_state_dict'])
+    model.to(device)
+    torch.zero_grad = True
+    model.eval()
+    loss, rep_loss, reps = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_dataloader, device, labels, c,plot_flag=True)
+    loss, rep_loss, reps = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_reverse_dataloader, device, labels, c,plot_flag=True)
 # %%计算threshold同时整理预测值，打印最后结果
 if config['model'] == 'TranAD':
     if config['eval_method'] == 'best_f1':
