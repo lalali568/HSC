@@ -1,13 +1,13 @@
 random_seed: 1
 model: HSR
-dataset: penism
+dataset: WADI
 device: 'cuda'
 batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: data/WADI/test_data.csv
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
@@ -25,13 +25,13 @@ MSL:
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: data/WADI/test_data.csv
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 100
+  epoch: 80
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -43,13 +43,13 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: data/WADI/test_data.csv
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/WADI/train_data.csv
+  label_path: data/WADI/label.csv
   window_size: 20
   step: 20
-  epoch: 100
+  epoch: 80
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -69,20 +69,20 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: 'data/penism/test_data15_3.csv' 
+    test_data_path: data/WADI/test_data.csv
     val_data_path: None
-    train_data_path: data/penism/train_data_3.csv
-    label_path: data/MSL/T-13_labels.npy
+    train_data_path: data/WADI/train_data.csv
+    label_path: data/WADI/label.csv
     window_size: 20
     step: 20
-    epoch: 100
+    epoch: 80
     learn_rate: 0.0001
     dropout: 0.5
     input_dim: 0 #这个在读取数据的时候得到
     hidden_dim: [ 51 ]
     kernel_size: 3
     tcn_bias: 1
-    radius: 7
+    radius: 10
     num_heads: 4
     num_transformer_layer: 2
     graph_head: 4
@@ -92,14 +92,14 @@ SWAT:
     max_diffusion_step: 2
     GRU_n_dim: 64
 WADI:
-  alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  alpha: 0.8
+  test_data_path: data/WADI/test_data.csv
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/WADI/train_data.csv
   label_path: data/WADI/label.csv
   window_size: 20
   step: 20
-  epoch: 100
+  epoch: 80
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到

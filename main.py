@@ -8,12 +8,12 @@ import os
 import argparse
 from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
-    adjust_scores
+    adjust_scores,produce_train_target_data
 from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset
 from torch.utils.data import DataLoader
-from models import TranAD_model_modified1 as TranAD_model
+from models import TranAD_model as TranAD_model
 from models import HSR_model_2 as HSR_model
-from models import AE_basic, GRELEN_model, COUTA_model
+from models import AE_basic, GRELEN_model, COUTA_model,SSHSR
 from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer
 import torch.nn as nn
 import yaml
@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/TranAD/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/SSHSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -93,7 +93,8 @@ if config['model'] == 'GRELEN':
         train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
         res = len(labels) % config['window_size']
-        labels = labels[:-res]
+        if res != 0:
+            labels = labels[:-res]
     if config['dataset'] == 'SMD':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
@@ -325,6 +326,21 @@ if config['model'] == 'HSR':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_val_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
+
+if config['model'] == "SSHSR":
+    if config['dataset'] == 'penism':
+        train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        config['input_dim'] = train_data_orig.shape[-1]
+        config['window_size'] = config['base_length']
+        labels= test_data_orig[:, -1]
+        test_data = test_data_orig[:, :-1]  # 这是如果test是penism的话最后一行是label，所以要去掉
+        test_data = slice_windows_data.process_data(test_data, config, step=config['base_length'])
+        train_data = produce_train_target_data.process_train_data(train_data_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_target_data = produce_train_target_data.process_target_data(train_data_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_data_reverse_orig = np.flipud(train_data_orig)
+        train_data_reverse = produce_train_target_data.process_train_data(train_data_reverse_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_target_data_reverse = produce_train_target_data.process_target_data(train_data_reverse_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
@@ -433,7 +449,7 @@ if config['model'] == 'HSR':
         np.savetxt('data/SMD/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/SMD/c_copy.csv', delimiter=',')
     if config['dataset'] == 'WADI':
-        np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
+        #np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/WADI/c_copy.csv', delimiter=',')
     c = torch.tensor(c, dtype=torch.float32).to(device)
 
@@ -614,7 +630,7 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scaler.fit_transform((0.8*scores + rep_loss))
+        scores = scaler.fit_transform((config['alpha']*scores + rep_loss))
         scores_copy = scores
         labels = labels[:len(scores)]
         scores = adjust_scores.adjust_scores(labels, scores)

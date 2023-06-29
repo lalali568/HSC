@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'GRELEN'
-dataset: penism
+dataset: WADI
 device: 'cuda'
 eval_method: "best_f1"
 
