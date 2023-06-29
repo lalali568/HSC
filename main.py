@@ -418,8 +418,8 @@ if config['model'] == 'COUTA':
     c = torch.tensor(c, dtype=torch.float32).to(device)
 if config['model'] == 'HSR':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
-    #center = HSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
-    #c_copy = center.cpu().detach().numpy()
+    center = HSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
+    c_copy = center.cpu().detach().numpy()
     if config['dataset'] == 'MSL':
         np.savetxt('data/MSL/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/MSL/c_copy.csv', delimiter=',')
@@ -433,7 +433,7 @@ if config['model'] == 'HSR':
         np.savetxt('data/SMD/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/SMD/c_copy.csv', delimiter=',')
     if config['dataset'] == 'WADI':
-        #np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
+        np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/WADI/c_copy.csv', delimiter=',')
     c = torch.tensor(c, dtype=torch.float32).to(device)
 
