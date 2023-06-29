@@ -6,7 +6,7 @@ sed -i "s#dataset:.*#dataset: $new_dataset#" config/GRELEN/config.yaml
 config_file="config/GRELEN/config.yaml"
 
 # 更新yaml文件的变量
-new_epoch=50
+new_epoch=8
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 #注释下面的列表
 
@@ -37,6 +37,11 @@ data_paths=(
   'T-5'
   'T-8'
   'T-9'
+  'T-12'
+  'T-13'
+)
+  data_paths=(
+
   'T-12'
   'T-13'
 )

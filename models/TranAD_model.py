@@ -66,7 +66,7 @@ class TransformerDecoderLayer(nn.Module):
         tgt2 = self.multihead_attn(tgt, memory, memory)[0]
         tgt = layer_norm(tgt + self.dropout2(tgt2))
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt))))
-        tgt = tgt + self.dropout3(tgt2)
+        tgt = self.layer_norm(tgt + self.dropout3(tgt2))
         return tgt
 
 class TranAD(nn.Module):

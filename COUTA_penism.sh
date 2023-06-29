@@ -7,6 +7,7 @@ sed -i "s#epoch:.*#epoch: $new_epoch#" config/COUTA/config.yaml
 
 #第一次
 
+
 new_train_data_path='data/penism/train_data_3.csv'
 sed -i "s#train_data_path:.*#train_data_path: $new_train_data_path#" config/COUTA/config.yaml
 

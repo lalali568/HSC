@@ -8,20 +8,20 @@ import os
 import argparse
 from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
-    adjust_scores
-from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset
+    adjust_scores,produce_train_target_data
+from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset
 from torch.utils.data import DataLoader
 from models import TranAD_model as TranAD_model
 from models import HSR_model_2 as HSR_model
-from models import AE_basic, GRELEN_model, COUTA_model
-from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer
+from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model
+from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer,SSHSR_trainer
 import torch.nn as nn
 import yaml
 from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/SSHSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -107,7 +107,8 @@ if config['model'] == 'GRELEN':
         labels = np.load(config['label_path'])
         labels = (np.sum(labels, axis=1) >= 1) + 0
         res = len(labels) % config['window_size']
-        labels = labels[:-res]
+        if res!=0:
+            labels = labels[:-res]
 
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
@@ -325,6 +326,28 @@ if config['model'] == 'HSR':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_val_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
+
+if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面是模型的输入，后面40维是模型的输出
+    if config['dataset'] == 'penism':
+        train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        config['input_dim'] = train_data_orig.shape[-1]
+        config['window_size'] = config['base_length']
+        labels= test_data_orig[:, -1]
+        test_data = test_data_orig[:, :-1]  # 这是如果test是penism的话最后一行是label，所以要去掉
+        test_data = slice_windows_data.process_data(test_data, config, step=config['base_length'])
+        test_dataset = SSHSR_dataset.dataset(config, test_data)
+
+        train_data = produce_train_target_data.process_train_data(train_data_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_target_data = produce_train_target_data.process_target_data(train_data_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_plus_target = np.concatenate((train_data, train_target_data), axis=1)#将train_data和train_target_data拼接起来
+
+        train_data_reverse_orig = np.flipud(train_data_orig)#将train_data_orig倒序
+        train_data_reverse = produce_train_target_data.process_train_data(train_data_reverse_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_target_data_reverse = produce_train_target_data.process_target_data(train_data_reverse_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_plus_target_reverse = np.concatenate((train_data_reverse, train_target_data_reverse), axis=1)#将train_data_reverse和train_target_data_reverse拼接起来
+        train_plus_target_data = np.concatenate((train_plus_target,train_plus_target_reverse))
+        train_plus_target_dataset = SSHSR_dataset.dataset(config, train_plus_target_reverse)
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
@@ -362,7 +385,10 @@ if config['model'] == 'HSR':
     else:
         test_dataloader = DataLoader(test_dataset, batch_size=config['test_batchsize'], shuffle=False, drop_last=False)
     # train_val_dataloader = DataLoader(train_val_dataset, batch_size=config['train_val_batchsize'], shuffle=False, drop_last=True)
-
+if config['model'] == 'SSHSR':
+    batch_size = config['batch_size']
+    train_plus_target_dataloader=DataLoader(train_plus_target_dataset, batch_size=batch_size, shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
 # %% 设定model
 if config['model'] == 'TranAD':
     model = TranAD_model.TranAD(config)
@@ -381,6 +407,11 @@ if config['model'] == 'HSR':
     model = model.to(device)
     model1 = HSR_model.HSR_1(config)
     model1 = model1.to(device)
+if config['model'] == 'SSHSR':
+    model = SSHSR_model.SSHSR(config)
+    model.to(device)
+    model1 = SSHSR_model.SSHSR_1(config)
+    model1.to(device)
 
 # %% 开始训练
 if config['model'] == 'TranAD':
@@ -436,7 +467,13 @@ if config['model'] == 'HSR':
         np.savetxt('data/WADI/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/WADI/c_copy.csv', delimiter=',')
     c = torch.tensor(c, dtype=torch.float32).to(device)
-
+if config['model'] == 'SSHSR':
+    optimizer= torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
+    center = SSHSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
+    c_copy = center.cpu().detach().numpy()
+    if config['dataset'] == 'penism':
+        np.savetxt('data/penism/SSHSR_c_copy.csv', c_copy, delimiter=',')
+        c = np.loadtxt('data/penism/SSHSR_c_copy.csv', delimiter=',')
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'

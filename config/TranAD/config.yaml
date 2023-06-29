@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'TranAD'
-dataset: penism
+dataset: MSL
 device: 'cuda'
 penism:
   train_batchsize: 32
@@ -8,9 +8,9 @@ penism:
   val_batchsize: 0
   train_val_batchsize: 0
   dim_feedforward: 10
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: "data/penism/val_data1.csv"
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/MSL/F-8_train.npy
   feat: 0
   window_size: 20
   step: 1
