@@ -9,7 +9,7 @@ import argparse
 from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
     adjust_scores,produce_train_target_data
-from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset
+from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset
 from torch.utils.data import DataLoader
 from models import TranAD_model as TranAD_model
 from models import HSR_model_2 as HSR_model
@@ -327,7 +327,7 @@ if config['model'] == 'HSR':
         train_val_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
 
-if config['model'] == "SSHSR":
+if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面是模型的输入，后面40维是模型的输出
     if config['dataset'] == 'penism':
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
@@ -336,11 +336,18 @@ if config['model'] == "SSHSR":
         labels= test_data_orig[:, -1]
         test_data = test_data_orig[:, :-1]  # 这是如果test是penism的话最后一行是label，所以要去掉
         test_data = slice_windows_data.process_data(test_data, config, step=config['base_length'])
+        test_dataset = SSHSR_dataset.dataset(config, test_data)
+
         train_data = produce_train_target_data.process_train_data(train_data_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
         train_target_data = produce_train_target_data.process_target_data(train_data_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
-        train_data_reverse_orig = np.flipud(train_data_orig)
+        train_plus_target = np.concatenate((train_data, train_target_data), axis=1)#将train_data和train_target_data拼接起来
+        train_plus_target_dataset = SSHSR_dataset.dataset(config, train_plus_target)
+
+        train_data_reverse_orig = np.flipud(train_data_orig)#将train_data_orig倒序
         train_data_reverse = produce_train_target_data.process_train_data(train_data_reverse_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
         train_target_data_reverse = produce_train_target_data.process_target_data(train_data_reverse_orig, config,step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
+        train_plus_target_reverse = np.concatenate((train_data_reverse, train_target_data_reverse), axis=1)#将train_data_reverse和train_target_data_reverse拼接起来
+        train_plus_target_reverse_dataset = SSHSR_dataset.dataset(config, train_plus_target_reverse)
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
