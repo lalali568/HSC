@@ -36,7 +36,7 @@ def smooth(y, box_pts=1):
     return y_smooth
 
 
-def plot_out(y_true, y_pred, ascore,model,dataset,val=False):
+def plot_out(y_true, y_pred, ascore,model,dataset,val=False,caption=None):
     #if 'TranAD' in name: y_true = torch.roll(y_true, 1, 0)
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d_%H-%M-%S")
@@ -52,7 +52,11 @@ def plot_out(y_true, y_pred, ascore,model,dataset,val=False):
         y_t, y_p, a_s = y_true[:, dim], y_pred[:, dim], ascore[:, dim]
         fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)  # 这个就是构造一个有两行一列的子图的图，同时两个图共享x轴
         ax1.set_ylabel('Value')
-        ax1.set_title(f'Dimension = {dim}')
+        if caption is not None:
+            if dim ==0:
+                ax1.set_title(f"{caption}  Dimension = {dim} ")
+        else:
+            ax1.set_title(f'Dimension = {dim} ')
         # if dim == 0: np.save(f'true{dim}.npy', y_t); np.save(f'pred{dim}.npy', y_p); np.save(f'ascore{dim}.npy', a_s)
         ax1.plot(smooth(y_t), linewidth=0.4, label='True')
         ax1.plot(smooth(y_p), '-', alpha=0.6, linewidth=0.3, label='Predicted')

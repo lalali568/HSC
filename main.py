@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/SSHSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -240,13 +240,29 @@ if config['model'] == 'HSR':
         # 制作dataset
         train_dataset = HSR_dataset.dataset(config, train_data, flag='train')
         test_dataset = HSR_dataset.dataset(config, test_data, flag='test')
-        train_val_dataset = COUTA_dataset.dataset(config, train_val_data, flag='train_val')
         # 原始的数据
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
         labels = labels.sum(axis=1)
-        labels = np.where(labels > 0, 1, 0)
+    if config['dataset'] == 'SMAP':
+        train_data = np.load(config['train_data_path'])
+        test_data = np.load(config['test_data_path'])
+        config['input_dim'] = train_data.shape[-1]
+        step = 1
+        data = slice_windows_data.process_data(train_data, config, step)  # 处理时间戳，切片
+        train_data = data
+        train_val_data = train_data
+        step = config['step']  # 因为想要覆盖所有的数据
+        test_data = slice_windows_data.process_data(test_data, config, step)
+        # 制作dataset
+        train_dataset = HSR_dataset.dataset(config, train_data, flag='train')
+        test_dataset = HSR_dataset.dataset(config, test_data, flag='test')
+        # 原始的数据
+        test_data_orig = np.load(config['test_data_path'])
+        train_val_data_orig = np.load(config['train_data_path'])
+        labels = np.load(config['label_path'])
+        labels = labels.sum(axis=1)
     if config['dataset'] == 'penism':
         train_data = np.loadtxt(config['train_data_path'], delimiter=',')
         test_data = np.loadtxt(config['test_data_path'], delimiter=',')[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
@@ -337,8 +353,8 @@ if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面�
         test_data = test_data_orig[:, :-1]  # 这是如果test是penism的话最后一行是label，所以要去掉
         test_data = slice_windows_data.process_data(test_data, config, step=config['base_length'])
         test_dataset = SSHSR_dataset.dataset(config, test_data)
-        test_data_reverse = np.flipud(test_data_orig)[:,:-1]#将test_data_orig倒序
-        test_data_reverse = slice_windows_data.process_data(test_data_reverse, config, step=config['base_length'])
+        test_data_reverse_orig = np.flipud(test_data_orig)[:,:-1]#将test_data_orig倒序
+        test_data_reverse = slice_windows_data.process_data(test_data_reverse_orig, config, step=config['base_length'])
         test_reverse_dataset = SSHSR_dataset.dataset(config, test_data_reverse)
 
         train_data = produce_train_target_data.process_train_data(train_data_orig, config, step=config['train_step'],base_length=config['base_length'],fore_length=config['fore_length'])
@@ -473,7 +489,7 @@ if config['model'] == 'HSR':
     c = torch.tensor(c, dtype=torch.float32).to(device)
 if config['model'] == 'SSHSR':
     optimizer= torch.optim.Adam(model.parameters(), lr=config['learn_rate'])
-    center = SSHSR_trainer.trainer(config, model1, model, train_dataloader, optimizer, device)
+    center = SSHSR_trainer.trainer(config, model1, model, train_plus_target_dataloader, optimizer, device)
     c_copy = center.cpu().detach().numpy()
     if config['dataset'] == 'penism':
         np.savetxt('data/penism/SSHSR_c_copy.csv', c_copy, delimiter=',')
@@ -549,8 +565,7 @@ if config['model'] == 'SSHSR':
     model.to(device)
     torch.zero_grad = True
     model.eval()
-    loss, rep_loss, reps = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_dataloader, device, labels, c,plot_flag=True)
-    loss, rep_loss, reps = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_reverse_dataloader, device, labels, c,plot_flag=True)
+    final_loss,test_data_fore_final,test_data_recon_final = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_dataloader,test_reverse_dataloader, device, labels, c,plot_flag=True)
 # %%计算threshold同时整理预测值，打印最后结果
 if config['model'] == 'TranAD':
     if config['eval_method'] == 'best_f1':
@@ -664,7 +679,7 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scaler.fit_transform((config['alpha']*scores + rep_loss))
+        scores = scaler.fit_transform(scores + rep_loss)
         scores_copy = scores
         labels = labels[:len(scores)]
         scores = adjust_scores.adjust_scores(labels, scores)
