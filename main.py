@@ -262,7 +262,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
     if config['dataset'] == 'penism':
         train_data = np.loadtxt(config['train_data_path'], delimiter=',')
         test_data = np.loadtxt(config['test_data_path'], delimiter=',')[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
@@ -474,6 +473,9 @@ if config['model'] == 'HSR':
     if config['dataset'] == 'MSL':
         np.savetxt('data/MSL/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/MSL/c_copy.csv', delimiter=',')
+    if config['dataset'] == 'SMAP':
+        np.savetxt('data/SMAP/c_copy.csv', c_copy, delimiter=',')
+        c = np.loadtxt('data/SMAP/c_copy.csv', delimiter=',')
     if config['dataset'] == 'penism':
         np.savetxt('data/penism/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/penism/c_copy.csv', delimiter=',')
