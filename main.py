@@ -244,7 +244,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
     if config['dataset'] == 'SMAP':
         train_data = np.load(config['train_data_path'])
         test_data = np.load(config['test_data_path'])

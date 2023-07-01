@@ -40,11 +40,6 @@ data_paths=(
   'T-12'
   'T-13'
 )
-  data_paths=(
-
-  'T-12'
-  'T-13'
-)
 
 
 

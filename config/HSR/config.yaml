@@ -6,11 +6,11 @@ batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
-  alpha: 1
-  test_data_path: data/MSL/M-1_test.npy
+  alpha: 0.8
+  test_data_path: data/MSL/D-14_test.npy
   val_data_path: None
-  train_data_path: data/MSL/M-1_train.npy
-  label_path: data/MSL/M-1_labels.npy
+  train_data_path: data/MSL/D-14_train.npy
+  label_path: data/MSL/D-14_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -25,10 +25,10 @@ MSL:
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: data/MSL/M-1_test.npy
+  test_data_path: data/MSL/D-14_test.npy
   val_data_path: None
-  train_data_path: data/MSL/M-1_train.npy
-  label_path: data/MSL/M-1_labels.npy
+  train_data_path: data/MSL/D-14_train.npy
+  label_path: data/MSL/D-14_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -43,10 +43,10 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: data/MSL/M-1_test.npy
+  test_data_path: data/MSL/D-14_test.npy
   val_data_path: None
-  train_data_path: data/MSL/M-1_train.npy
-  label_path: data/MSL/M-1_labels.npy
+  train_data_path: data/MSL/D-14_train.npy
+  label_path: data/MSL/D-14_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -69,10 +69,10 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: data/MSL/M-1_test.npy
+    test_data_path: data/MSL/D-14_test.npy
     val_data_path: None
-    train_data_path: data/MSL/M-1_train.npy
-    label_path: data/MSL/M-1_labels.npy
+    train_data_path: data/MSL/D-14_train.npy
+    label_path: data/MSL/D-14_labels.npy
     window_size: 20
     step: 20
     epoch: 700
@@ -93,10 +93,10 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: data/MSL/M-1_test.npy
+  test_data_path: data/MSL/D-14_test.npy
   val_data_path: None
-  train_data_path: data/MSL/M-1_train.npy
-  label_path: data/MSL/M-1_labels.npy
+  train_data_path: data/MSL/D-14_train.npy
+  label_path: data/MSL/D-14_labels.npy
   window_size: 20
   step: 20
   epoch: 700
