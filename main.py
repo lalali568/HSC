@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/COUTA/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -47,7 +47,6 @@ if config['model'] == 'TranAD':
         test_data_orig = np.load(config['test_data_path'])
         train_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = (np.sum(labels, axis=1) >= 1) + 0
     if config['dataset'] == 'WADI':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
@@ -223,8 +222,6 @@ if config['model'] == 'COUTA':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
-        labels = np.where(labels > 0, 1, 0)
 
 if config['model'] == 'HSR':
     if config['dataset'] == 'MSL':
@@ -261,7 +258,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
     if config['dataset'] == 'penism':
         train_data = np.loadtxt(config['train_data_path'], delimiter=',')
         test_data = np.loadtxt(config['test_data_path'], delimiter=',')[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
@@ -473,6 +469,9 @@ if config['model'] == 'HSR':
     if config['dataset'] == 'MSL':
         np.savetxt('data/MSL/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/MSL/c_copy.csv', delimiter=',')
+    if config['dataset'] == 'SMAP':
+        np.savetxt('data/SMAP/c_copy.csv', c_copy, delimiter=',')
+        c = np.loadtxt('data/SMAP/c_copy.csv', delimiter=',')
     if config['dataset'] == 'penism':
         np.savetxt('data/penism/c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/penism/c_copy.csv', delimiter=',')
@@ -678,7 +677,7 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scaler.fit_transform(scores + rep_loss)
+        scores = scaler.fit_transform(scores + 0.8*rep_loss)
         scores_copy = scores
         labels = labels[:len(scores)]
         scores = adjust_scores.adjust_scores(labels, scores)
