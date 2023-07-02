@@ -109,6 +109,7 @@ def record_loss(l,loss,model,dataset,val=False):
     pdf.close()
 
 def loss_eachtimestamp_prediction_out(ground,pred,loss,model,dataset,):
+    ground = ground.squeeze()
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d_%H-%M-%S")
     path = os.path.join('plot', 'loss_eachtimestamp_prediction_out', model, dataset)

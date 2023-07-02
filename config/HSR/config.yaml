@@ -7,10 +7,10 @@ val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: data/SMAP/A-1_test.npy
+  test_data_path: data/SMAP/T-3_test.npy
   val_data_path: None
-  train_data_path: data/SMAP/A-1_train.npy
-  label_path: data/SMAP/A-1_labels.npy
+  train_data_path: data/SMAP/T-3_train.npy
+  label_path: data/SMAP/T-3_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -25,10 +25,10 @@ MSL:
   num_transformer_layer: 2
 SMAP:
   alpha: 1
-  test_data_path: data/SMAP/A-1_test.npy
+  test_data_path: data/SMAP/T-3_test.npy
   val_data_path: None
-  train_data_path: data/SMAP/A-1_train.npy
-  label_path: data/SMAP/A-1_labels.npy
+  train_data_path: data/SMAP/T-3_train.npy
+  label_path: data/SMAP/T-3_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -38,15 +38,15 @@ SMAP:
   hidden_dim: [ 25 ]
   kernel_size: 3
   tcn_bias: 1
-  radius: 10
+  radius: 6
   num_heads: 4
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: data/SMAP/A-1_test.npy
+  test_data_path: data/SMAP/T-3_test.npy
   val_data_path: None
-  train_data_path: data/SMAP/A-1_train.npy
-  label_path: data/SMAP/A-1_labels.npy
+  train_data_path: data/SMAP/T-3_train.npy
+  label_path: data/SMAP/T-3_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -61,10 +61,10 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: data/SMAP/A-1_test.npy
+  test_data_path: data/SMAP/T-3_test.npy
   val_data_path: None
-  train_data_path: data/SMAP/A-1_train.npy
-  label_path: data/SMAP/A-1_labels.npy
+  train_data_path: data/SMAP/T-3_train.npy
+  label_path: data/SMAP/T-3_labels.npy
   window_size: 20
   step: 20
   epoch: 700
@@ -87,10 +87,10 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: data/SMAP/A-1_test.npy
+    test_data_path: data/SMAP/T-3_test.npy
     val_data_path: None
-    train_data_path: data/SMAP/A-1_train.npy
-    label_path: data/SMAP/A-1_labels.npy
+    train_data_path: data/SMAP/T-3_train.npy
+    label_path: data/SMAP/T-3_labels.npy
     window_size: 20
     step: 20
     epoch: 700
@@ -111,10 +111,10 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: data/SMAP/A-1_test.npy
+  test_data_path: data/SMAP/T-3_test.npy
   val_data_path: None
-  train_data_path: data/SMAP/A-1_train.npy
-  label_path: data/SMAP/A-1_labels.npy
+  train_data_path: data/SMAP/T-3_train.npy
+  label_path: data/SMAP/T-3_labels.npy
   window_size: 20
   step: 20
   epoch: 700
