@@ -1,6 +1,6 @@
 random_seed: 1
 model: 'GRELEN'
-dataset: MSL
+dataset: SWAT
 device: 'cuda'
 eval_method: "best_f1"
 
@@ -39,10 +39,10 @@ SWAT:
   val_batchsize: 0
   train_val_len: 400
   dim_feedforward: 10
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: data/SWAT/test_data.csv
   val_data_path: 'None'
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/SWAT/train_data.csv
+  label_path: data/SWAT/labels.csv
   feat: 0
   window_size: 30
   step: 1

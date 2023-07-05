@@ -1,0 +1,70 @@
+random_seed: 1
+model: GDN
+dataset: MSL
+device: 'cuda'
+eval_method: 'best_f1'
+
+penism:
+  train_data_path: data/MSL/F-8_train.npy
+  test_data_path: data/MSL/F-8_test.npy
+  batch_size: 128
+  epoch: 700
+  node_num: 16
+  slide_win: 15
+  slide_stride: 5
+  embed_dim: 64
+  out_layer_num: 1
+  out_layer_inter_dim: 256
+  decay: 0
+  topk: 15
+  dropout: 0.2
+  lr: 0.0001
+
+SWAT:
+  train_data_path: data/MSL/F-8_train.npy
+  test_data_path: data/MSL/F-8_test.npy
+  label_path: data/MSL/F-8_labels.npy
+  batch_size: 128
+  epoch: 700
+  node_num: 51
+  slide_win: 15
+  slide_stride: 5
+  embed_dim: 64
+  out_layer_num: 1
+  out_layer_inter_dim: 64
+  decay: 0
+  topk: 40
+  dropout: 0.2
+  lr: 0.0001
+MSL:
+  train_data_path: data/MSL/F-8_train.npy
+  test_data_path: data/MSL/F-8_test.npy
+  label_path: data/MSL/F-8_labels.npy
+  batch_size: 128
+  epoch: 700
+  node_num: 55
+  slide_win: 15
+  slide_stride: 5
+  embed_dim: 64
+  out_layer_num: 1
+  out_layer_inter_dim: 64
+  decay: 0
+  topk: 45
+  dropout: 0.2
+  lr: 0.0001
+SMD:
+  train_data_path: data/MSL/F-8_train.npy
+  test_data_path: data/MSL/F-8_test.npy
+  label_path: data/MSL/F-8_labels.npy
+  batch_size: 128
+  epoch: 700
+  node_num: 38
+  slide_win: 15
+  slide_stride: 5
+  embed_dim: 64
+  out_layer_num: 1
+  out_layer_inter_dim: 64
+  decay: 0
+  topk: 30
+  dropout: 0.2
+  lr: 0.0001

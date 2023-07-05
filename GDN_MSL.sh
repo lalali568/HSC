@@ -1,23 +1,13 @@
 #!/usr/bin/env bash
-
+config_file="config/GDN/config.yaml"
 new_dataset="MSL"
-sed -i "s#dataset:.*#dataset: $new_dataset#" config/COUTA/config.yaml
+sed -i "s#dataset:.*#dataset: $new_dataset#" "$config_file"
 
-<<<<<<< HEAD
-new_epoch=700
-sed -i "s#epoch:.*#epoch: $new_epoch#" config/COUTA/config.yaml
-
-new_dataset="MSL"
-sed -i "s#dataset:.*#dataset: $new_dataset#" config/COUTA/config.yaml
-#第一次
-=======
-config_file="config/COUTA/config.yaml"
 
 # 更新yaml文件的变量
 new_epoch=700
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 #注释下面的列表
->>>>>>> a47b700aa844e4b07bb4f1b8a54a4805398a7782
 
 # 数据路径列表
 data_paths=(

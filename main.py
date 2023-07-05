@@ -6,22 +6,22 @@ import random
 import torch
 import os
 import argparse
-from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester,SSHSR_tester
+from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester,SSHSR_tester,GDN_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
-    adjust_scores,produce_train_target_data
-from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset
+    adjust_scores,produce_train_target_data,GDN_proceese_data
+from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset,GDN_dataset
 from torch.utils.data import DataLoader
 from models import TranAD_model as TranAD_model
 from models import HSR_model_2 as HSR_model
-from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model
-from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer,SSHSR_trainer
+from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model,GDN_model
+from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer,SSHSR_trainer, GDN_trainer
 import torch.nn as nn
 import yaml
 from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/GDN/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -362,6 +362,39 @@ if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面�
         train_plus_target_reverse = np.concatenate((train_data_reverse, train_target_data_reverse), axis=1)#将train_data_reverse和train_target_data_reverse拼接起来
         train_plus_target_data = np.concatenate((train_plus_target,train_plus_target_reverse))
         train_plus_target_dataset = SSHSR_dataset.dataset(config, train_plus_target_reverse)
+
+if config['model'] == "GDN":
+    if config['dataset'] == 'penism':
+        train_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        test_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        train_labels = np.zeros(train_orig.shape[0])
+        test_labels = test_orig[:, -1]
+        train_input, train_output, train_labels= GDN_proceese_data.process(config,torch.tensor(train_orig).permute(1,0),torch.tensor(train_labels),train=True)
+        test_input, test_output, test_labels = GDN_proceese_data.process(config,torch.tensor(test_orig[:, :-1]).permute(1,0), torch.tensor(test_labels))
+        train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
+        test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+    if config['dataset']=='SWAT' or config['dataset']=='SMD':
+        train_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        test_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        labels = np.loadtxt(config['label_path'], delimiter=',')
+        train_labels = np.zeros(train_orig.shape[0])
+        test_labels = labels
+        train_input, train_output, train_labels= GDN_proceese_data.process(config,torch.tensor(train_orig).permute(1,0),torch.tensor(train_labels),train=True)
+        test_input, test_output, test_labels = GDN_proceese_data.process(config,torch.tensor(test_orig[:, :-1]).permute(1,0), torch.tensor(test_labels))
+        train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
+        test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+    if config['dataset'] == 'MSL':
+        train_orig = np.load(config['train_data_path'])
+        test_orig = np.load(config['test_data_path'])
+        labels = np.load(config['label_path'])
+        train_labels = np.zeros(train_orig.shape[0])
+        test_labels = labels
+        train_input, train_output, train_labels = GDN_proceese_data.process(config,torch.tensor(train_orig).permute(1, 0), torch.tensor(train_labels), train=True)
+        test_input, test_output, test_labels = GDN_proceese_data.process(config, torch.tensor(test_orig[:, :-1]).permute(1, 0),torch.tensor(test_labels))
+        train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
+        test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+
+
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
@@ -404,6 +437,9 @@ if config['model'] == 'SSHSR':
     train_plus_target_dataloader=DataLoader(train_plus_target_dataset, batch_size=batch_size, shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
     test_reverse_dataloader = DataLoader(test_reverse_dataset, batch_size=batch_size, shuffle=False)
+if config['model'] == 'GDN':
+    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=config['batch_size'], shuffle=False)
 # %% 设定model
 if config['model'] == 'TranAD':
     model = TranAD_model.TranAD(config)
@@ -427,6 +463,9 @@ if config['model'] == 'SSHSR':
     model.to(device)
     model1 = SSHSR_model.SSHSR_1(config)
     model1.to(device)
+if config['model'] == 'GDN':
+    model = GDN_model.GDN(config)
+    model.to(device)
 
 # %% 开始训练
 if config['model'] == 'TranAD':
@@ -492,6 +531,9 @@ if config['model'] == 'SSHSR':
     if config['dataset'] == 'penism':
         np.savetxt('data/penism/SSHSR_c_copy.csv', c_copy, delimiter=',')
         c = np.loadtxt('data/penism/SSHSR_c_copy.csv', delimiter=',')
+if config['model'] == 'GDN':
+    optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
+    GDN_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'
@@ -564,6 +606,15 @@ if config['model'] == 'SSHSR':
     torch.zero_grad = True
     model.eval()
     final_loss,test_data_fore_final,test_data_recon_final = SSHSR_tester.tester(config, model, test_data_orig[:,:-1], test_dataloader,test_reverse_dataloader, device, labels, c,plot_flag=True)
+if config['model'] == 'GDN':
+    fname = 'checkpoints/GDN_' + config['dataset'] + '/model.ckpt'
+    checkpoints = torch.load(fname)
+    model = GDN_model.GDN(config)
+    model.load_state_dict(checkpoints['model_state_dict'])
+    model.to(device)
+    torch.zero_grad = True
+    model.eval()
+    test_loss,test_ground_list, test_predicted_list,test_label_list = GDN_tester.tester(config, model, test_dataloader, plot_flag=True)
 # %%计算threshold同时整理预测值，打印最后结果
 if config['model'] == 'TranAD':
     if config['eval_method'] == 'best_f1':
@@ -707,3 +758,17 @@ if config['model'] == 'HSR':
               f"recall:{score[2]},\n"
               f"ROC/AUC:{score[7]},\n"
               f"threshold:{threshold}")
+if config['model'] == 'GDN':
+    if config['eval_method'] == 'best_f1':
+        scores = np.sum(test_loss, axis=1)
+        scaler = MinMaxScaler(feature_range=(0, 1))
+        scores = scaler.fit_transform(scores.reshape(len(scores), 1))
+        scores_copy = scores
+        scores = adjust_scores.adjust_scores(test_label_list, scores)
+        eval_info2 = get_metrics.get_best_f1(test_label_list, scores)
+        thred = eval_info2[3]
+        y_pred = np.where(scores >= thred, 1, 0)
+        y_pred_orig = np.where(scores_copy >= thred, 1, 0)
+        ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_ground_list)), test_label_list, config['model'],config['dataset'])
+        ploting.loss_eachtimestamp_prediction_out(test_label_list, y_pred, scores_copy, config['model'],config['dataset'])
+        print(eval_info2, 'f1,precision,recall,threshold')
