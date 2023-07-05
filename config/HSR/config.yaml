@@ -7,7 +7,7 @@ val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: 'data/penism/test_data1_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
@@ -25,7 +25,7 @@ MSL:
   num_transformer_layer: 2
 SMAP:
   alpha: 1
-  test_data_path: 'data/penism/test_data1_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
@@ -43,7 +43,7 @@ SMAP:
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: 'data/penism/test_data1_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
@@ -61,7 +61,7 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: 'data/penism/test_data1_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy
@@ -87,7 +87,7 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: 'data/penism/test_data1_3.csv' 
+    test_data_path: 'data/penism/test_data4_3.csv' 
     val_data_path: None
     train_data_path: data/penism/train_data_3.csv
     label_path: data/MSL/T-13_labels.npy
@@ -111,7 +111,7 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: 'data/penism/test_data1_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/MSL/T-13_labels.npy

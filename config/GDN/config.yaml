@@ -1,0 +1,22 @@
+random_seed: 1
+model: GDN
+dataset: penism
+device: 'cuda'
+eval_method: 'best_f1'
+
+penism:
+  train_data_path: data/penism/train_data_3.csv
+  test_data_path: 'data/penism/test_data1_3.csv' 
+  batch_size: 128
+  epoch: 100
+  node_num: 16
+  slide_win: 15
+  slide_stride: 5
+  embed_dim: 64
+  out_layer_num: 1
+  out_layer_inter_dim: 256
+  decay: 0
+  topk: 10
+  dropout: 0.2
+  lr: 0.0001
+
