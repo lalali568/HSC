@@ -8,8 +8,8 @@ from torch_geometric.nn.conv import MessagePassing
 from torch_geometric.utils import remove_self_loops, add_self_loops, softmax
 from util import GDN_proceese_data
 from torch_geometric.nn.inits import glorot, zeros
-
-
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning)
 class GraphLayer(MessagePassing):
     def __init__(self, in_channels, out_channels, heads=1, concat=True,
                  negative_slope=0.2, dropout=0, bias=True, inter_dim=-1, **kwargs):
