@@ -2,9 +2,11 @@
 
 #更新yaml文件的变量
 
-new_epoch=15027
+new_epoch=700
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/COUTA/config.yaml
 
+new_dataset="MSL"
+sed -i "s#dataset:.*#dataset: $new_dataset#" config/COUTA/config.yaml
 #第一次
 
 new_test_data_path='data/MSL/C-1_test.npy'

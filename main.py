@@ -47,7 +47,6 @@ if config['model'] == 'TranAD':
         test_data_orig = np.load(config['test_data_path'])
         train_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = (np.sum(labels, axis=1) >= 1) + 0
     if config['dataset'] == 'WADI':
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
@@ -223,8 +222,6 @@ if config['model'] == 'COUTA':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
-        labels = np.where(labels > 0, 1, 0)
 
 if config['model'] == 'HSR':
     if config['dataset'] == 'MSL':
@@ -244,7 +241,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-        labels = labels.sum(axis=1)
     if config['dataset'] == 'SMAP':
         train_data = np.load(config['train_data_path'])
         test_data = np.load(config['test_data_path'])
@@ -681,7 +677,7 @@ if config['model'] == 'HSR':
             test_data_orig = test_data_orig[:len(scores)]
         scores = scaler.fit_transform(scores.reshape(len(test_data_orig), 1))
         rep_loss = scaler.fit_transform(rep_loss.cpu().numpy().reshape(len(test_data_orig), 1))
-        scores = scaler.fit_transform(scores + rep_loss)
+        scores = scaler.fit_transform(scores + 0.8*rep_loss)
         scores_copy = scores
         labels = labels[:len(scores)]
         scores = adjust_scores.adjust_scores(labels, scores)
