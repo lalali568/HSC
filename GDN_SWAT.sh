@@ -8,7 +8,6 @@ config_file="config/GDN/config.yaml"
 new_epoch=20
 sed -i "s#epoch:.*#epoch: $new_epoch#" c"$config_file"
 
-
   new_test_data_path="data/SWAT/test_data.csv"
   new_train_data_path="data/SWAT/train_data.csv"
   new_label_path="data/SWAT/labels.csv"

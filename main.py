@@ -533,7 +533,7 @@ if config['model'] == 'SSHSR':
         c = np.loadtxt('data/penism/SSHSR_c_copy.csv', delimiter=',')
 if config['model'] == 'GDN':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
-    GDN_trainer.trainer(config, model, train_dataloader, optimizer)
+#    GDN_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'
