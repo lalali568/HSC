@@ -373,6 +373,27 @@ if config['model'] == "GDN":
         test_input, test_output, test_labels = GDN_proceese_data.process(config,torch.tensor(test_orig[:, :-1]).permute(1,0), torch.tensor(test_labels))
         train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
         test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+    if config['dataset']=='SWAT' or config['dataset']=='SMD':
+        train_orig = np.loadtxt(config['train_data_path'], delimiter=',')
+        test_orig = np.loadtxt(config['test_data_path'], delimiter=',')
+        labels = np.loadtxt(config['label_path'], delimiter=',')
+        train_labels = np.zeros(train_orig.shape[0])
+        test_labels = labels
+        train_input, train_output, train_labels= GDN_proceese_data.process(config,torch.tensor(train_orig).permute(1,0),torch.tensor(train_labels),train=True)
+        test_input, test_output, test_labels = GDN_proceese_data.process(config,torch.tensor(test_orig[:, :-1]).permute(1,0), torch.tensor(test_labels))
+        train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
+        test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+    if config['dataset'] == 'MSL':
+        train_orig = np.load(config['train_data_path'])
+        test_orig = np.load(config['test_data_path'])
+        labels = np.load(config['label_path'])
+        train_labels = np.zeros(train_orig.shape[0])
+        test_labels = labels
+        train_input, train_output, train_labels = GDN_proceese_data.process(config,torch.tensor(train_orig).permute(1, 0), torch.tensor(train_labels), train=True)
+        test_input, test_output, test_labels = GDN_proceese_data.process(config, torch.tensor(test_orig[:, :-1]).permute(1, 0),torch.tensor(test_labels))
+        train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
+        test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
+
 
 # %%  设定dataloader
 if config['model'] == 'TranAD':

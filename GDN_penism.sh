@@ -3,7 +3,7 @@ new_dataset="penism"
 config_file="config/GDN/config.yaml"
 sed -i "s#dataset:.*#dataset: $new_dataset#" "$config_file"
 # 更新yaml文件的变量
-new_epoch=100
+new_epoch=700
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 
 
@@ -28,9 +28,9 @@ run_test_data() {
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 515
+    comment_lines 536
   elif [[ $1 -eq 15 ]]; then
-    uncomment_lines 515
+    uncomment_lines 536
   fi
 }
 
