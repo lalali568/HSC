@@ -135,9 +135,9 @@ class GATModel(nn.Module):
         self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) ], dtype=torch.long).t().contiguous()
 
     def forward(self,x):
-        self.edge_index = self.get_batch_edge_index(self.edge_index, x.size(0), self.config['window_size']).to(self.config['device']).detach()
+        batch_edge_index = self.get_batch_edge_index(self.edge_index, x.size(0), self.config['window_size']).to(self.config['device']).detach()
         x= x.reshape(-1,x.size(-1))
-        x = self.conv(x, self.edge_index)
+        x = self.conv(x, batch_edge_index)
         x = self.lin(x)
         x=x.view(-1,self.config['window_size'],self.config['input_dim'])
         return x
