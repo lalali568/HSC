@@ -23,6 +23,7 @@ MSL:
   radius: 10
   num_heads: 4
   num_transformer_layer: 2
+  feat_num: 55
 SMAP:
   alpha: 1
   test_data_path: 'data/penism/test_data1_3.csv' 
@@ -41,6 +42,7 @@ SMAP:
   radius: 6
   num_heads: 4
   num_transformer_layer: 2
+  feat_num: 25
 SMD:
   alpha: 1
   test_data_path: 'data/penism/test_data1_3.csv' 
@@ -127,4 +129,5 @@ WADI:
   radius: 20
   num_heads: 4
   num_transformer_layer: 2
+  feat_num: 127
 
