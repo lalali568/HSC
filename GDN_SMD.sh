@@ -5,7 +5,7 @@ new_dataset="SMD"
 sed -i "s#dataset:.*#dataset: $new_dataset#" "$config_file"
 
 # 更新yaml文件的变量
-new_epoch=100
+new_epoch=700
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 
 # 定义需要重复的数据路径列表

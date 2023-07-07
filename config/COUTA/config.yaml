@@ -12,9 +12,15 @@ learn_rate: 0.0001
 dropout: 0.2
 epoch: 700
 WADI:
+<<<<<<< HEAD
+  train_data_path: data/MSL/D-15_train.npy
+  test_data_path: data/MSL/D-15_test.npy
+  label_path: data/MSL/D-15_labels.npy
+=======
   train_data_path: data/MSL/T-13_train.npy
   test_data_path: data/MSL/T-13_test.npy
   label_path: data/MSL/T-13_labels.npy
+>>>>>>> a47b700aa844e4b07bb4f1b8a54a4805398a7782
   input_dim: 0 #在读取数据时自动赋值
   hidden_dim: [100]
   kernel_size: 3

@@ -7,9 +7,9 @@ val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/MSL/T-13_train.npy
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
@@ -25,9 +25,9 @@ MSL:
   num_transformer_layer: 2
 SMAP:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/MSL/T-13_train.npy
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
@@ -38,14 +38,14 @@ SMAP:
   hidden_dim: [ 25 ]
   kernel_size: 3
   tcn_bias: 1
-  radius: 10
+  radius: 6
   num_heads: 4
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/MSL/T-13_train.npy
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
@@ -61,10 +61,10 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
-  label_path: data/MSL/T-13_labels.npy
+  label_path: None
   window_size: 20
   step: 20
   epoch: 100
@@ -87,9 +87,9 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: 'data/penism/test_data4_3.csv' 
+    test_data_path: 'data/penism/test_data4_3.csv'
     val_data_path: None
-    train_data_path: data/penism/train_data_3.csv
+    train_data_path: data/MSL/T-13_train.npy
     label_path: data/MSL/T-13_labels.npy
     window_size: 20
     step: 20
@@ -111,9 +111,9 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
-  train_data_path: data/penism/train_data_3.csv
+  train_data_path: data/MSL/T-13_train.npy
   label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20

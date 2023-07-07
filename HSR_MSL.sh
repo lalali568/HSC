@@ -6,7 +6,7 @@ sed -i "s#dataset:.*#dataset: $new_dataset#" config/HSR/config.yaml
 config_file="config/HSR/config.yaml"
 
 # 更新yaml文件的变量
-new_epoch=700
+new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 #注释下面的列表
 

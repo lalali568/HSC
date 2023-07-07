@@ -12,7 +12,7 @@ from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, p
 from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset,GDN_dataset
 from torch.utils.data import DataLoader
 from models import TranAD_model as TranAD_model
-from models import HSR_model_2 as HSR_model
+from models import HSR_model_3 as HSR_model
 from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model,GDN_model
 from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer,SSHSR_trainer, GDN_trainer
 import torch.nn as nn
@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/GDN/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -533,7 +533,7 @@ if config['model'] == 'SSHSR':
         c = np.loadtxt('data/penism/SSHSR_c_copy.csv', delimiter=',')
 if config['model'] == 'GDN':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
-#    GDN_trainer.trainer(config, model, train_dataloader, optimizer)
+    GDN_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'
