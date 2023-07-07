@@ -1,19 +1,18 @@
 random_seed: 1
 model: HSR
-dataset: SWAT
+dataset: MSL
 device: 'cuda'
 batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
-  alpha: 1
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/T-13_train.npy
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -25,13 +24,13 @@ MSL:
   num_transformer_layer: 2
 SMAP:
   alpha: 1
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/T-13_train.npy
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -43,13 +42,13 @@ SMAP:
   num_transformer_layer: 2
 SMD:
   alpha: 1
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/T-13_train.npy
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
@@ -61,21 +60,21 @@ SMD:
   num_transformer_layer: 2
 penism:
   alpha: 1
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/T-13_train.npy
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 20
-  learn_rate: 0.0001
+  epoch: 100
+  learn_rate: 0.001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
   hidden_dim: [16]
   kernel_size: 3
   radius: 5
   tcn_bias: 1
-  num_heads: 4
+  num_heads: 8
   num_transformer_layer: 2
 
   #下面加的就是我在改变decoder,使用drgru之后添加的参数，还是尝试阶段
@@ -87,13 +86,13 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: data/SWAT/test_data.csv
+    test_data_path: data/MSL/T-13_test.npy
     val_data_path: None
-    train_data_path: data/SWAT/train_data.csv
-    label_path: data/SWAT/labels.csv
+    train_data_path: data/MSL/T-13_train.npy
+    label_path: data/MSL/T-13_labels.npy
     window_size: 20
     step: 20
-    epoch: 20
+    epoch: 100
     learn_rate: 0.0001
     dropout: 0.1
     input_dim: 0 #这个在读取数据的时候得到
@@ -111,13 +110,13 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: data/SWAT/test_data.csv
+  test_data_path: data/MSL/T-13_test.npy
   val_data_path: None
-  train_data_path: data/SWAT/train_data.csv
-  label_path: data/SWAT/labels.csv
+  train_data_path: data/MSL/T-13_train.npy
+  label_path: data/MSL/T-13_labels.npy
   window_size: 20
   step: 20
-  epoch: 20
+  epoch: 100
   learn_rate: 0.0001
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
