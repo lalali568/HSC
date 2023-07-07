@@ -2,7 +2,7 @@
 new_dataset="penism"
 sed -i "s#dataset:.*#dataset: $new_dataset#" config/HSR/config.yaml
 # 更新yaml文件的变量
-new_epoch=100
+new_epoch=50
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/HSR/config.yaml
 
 new_train_data=data/penism/train_data_3.csv
@@ -26,9 +26,9 @@ run_test_data() {
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 421
-    comment_lines 422
-    comment_lines 427
+    comment_lines 506
+    comment_lines 507
+    comment_lines 515
   elif [[ $1 -eq 15 ]]; then
     uncomment_lines 421
     uncomment_lines 422
