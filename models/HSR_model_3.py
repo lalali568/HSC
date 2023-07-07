@@ -132,14 +132,26 @@ class GATModel(nn.Module):
         self.config = config
         self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
         self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
-        self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
-        self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])
+        self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) ], dtype=torch.long).t().contiguous()
+
     def forward(self,x):
+        self.edge_index = self.get_batch_edge_index(self.edge_index, x.size(0), self.config['window_size']).to(self.config['device']).detach()
         x= x.reshape(-1,x.size(-1))
         x = self.conv(x, self.edge_index)
         x = self.lin(x)
         x=x.view(-1,self.config['window_size'],self.config['input_dim'])
         return x
+
+    def get_batch_edge_index(self,org_edge_index, batch_num, node_num):
+        # org_edge_index:(2, edge_num)
+        edge_index = org_edge_index.clone().detach()
+        edge_num = org_edge_index.shape[1]
+        batch_edge_index = edge_index.repeat(1, batch_num).contiguous()
+
+        for i in range(batch_num):
+            batch_edge_index[:, i * edge_num:(i + 1) * edge_num] += i * node_num
+
+        return batch_edge_index.long()
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()
