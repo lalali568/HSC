@@ -4,6 +4,7 @@ import numpy as np
 from torch_geometric.nn import GATConv
 from torch_geometric.utils import  dense_to_sparse
 from torch_geometric.data import Data
+from torch.nn import MultiheadAttention
 
 class Chomp1d(nn.Module):
     def __init__(self, chomp_size):
@@ -160,15 +161,26 @@ class GATModel_2(nn.Module):
         return x
 
 
-    def get_batch_edge_index(self,org_edge_index, batch_num, node_num):
-        # org_edge_index:(2, edge_num)
-        edge_index = org_edge_index
-        edge_num = org_edge_index.shape[1]
-        batch_edge_index = edge_index.repeat(1, batch_num).contiguous()
+class Multi_Head(nn.Module):
+    def __init__(self,config):
+        super(Multi_Head,self).__init__()
+        self.config = config
+        self.multihead = MultiheadAttention(config['window_size'],config['num_heads'])
+        self.lin_k = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.lin_q = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.lin_v = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.norm = nn.LayerNorm(config['input_dim'])
+        self.dropout = nn.Dropout(config['dropout'])
+    def forward(self,x):
+        x = x.permute(0,2,1)
+        q = self.lin_q(x)
+        k = self.lin_k(x)
+        v = self.lin_v(x)
+        x,_ = self.multihead(q,k,v)
+        x = x.permute(0,2,1)
+        return x
 
-        for i in range(batch_num):
-            batch_edge_index[:, i * edge_num:(i + 1) * edge_num] += i * node_num
-        return batch_edge_index
+
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()

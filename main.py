@@ -402,6 +402,20 @@ if config['model']=='MTAD_GAT':
         test_data_orig = test_data
         train_dataset = MTAD_GAT_dataset.dataset(config, train_data)
         test_dataset = MTAD_GAT_dataset.dataset(config, test_data)
+    if config['dataset'] == "MSL":
+        train_data = torch.tensor(np.load(config['train_data_path']),dtype=torch.float32)
+        test_data = torch.tensor(np.load(config['test_data_path']),dtype=torch.float32)
+        test_labels = torch.tensor(np.load(config['label_path']),dtype=torch.float32)
+        test_data_orig = test_data
+        train_dataset = MTAD_GAT_dataset.dataset(config, train_data)
+        test_dataset = MTAD_GAT_dataset.dataset(config, test_data)
+    if config['dataset']=='SMD':
+        train_data = torch.tensor(np.loadtxt(config['train_data_path'], delimiter=','),dtype=torch.float32)
+        test_data = torch.tensor(np.loadtxt(config['test_data_path'], delimiter=','),dtype=torch.float32)
+        test_labels = torch.tensor(np.loadtxt(config['label_path'], delimiter=','),dtype=torch.float32)
+        test_data_orig = test_data
+        train_dataset = MTAD_GAT_dataset.dataset(config, train_data)
+        test_dataset = MTAD_GAT_dataset.dataset(config, test_data)
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
@@ -549,7 +563,7 @@ if config['model'] == 'GDN':
     GDN_trainer.trainer(config, model, train_dataloader, optimizer)
 if config['model'] == 'MTAD_GAT':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
-#    MTAD_GAT_trainer.trainer(config, model, train_dataloader, optimizer)
+    MTAD_GAT_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'

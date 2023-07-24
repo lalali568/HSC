@@ -7,7 +7,7 @@ val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -45,7 +45,7 @@ SMAP:
   feat_num: 25
 SMD:
   alpha: 1
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -74,14 +74,13 @@ penism:
   dropout: 0.1
   input_dim: 0 #这个在读取数据的时候得到
   hidden_dim: [16]
-  kernel_size: 3
+  kernel_size: 2
   radius: 5
   tcn_bias: 1
   num_heads: 4
   num_transformer_layer: 2
 
   #下面加的就是我在改变decoder,使用drgru之后添加的参数，还是尝试阶段
-  graph_head: 4
   graph_threshold: 0.5
   num_rnn_layers: 1
   feat_num: 16
@@ -89,7 +88,7 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: 'data/penism/test_data4_3.csv' 
+    test_data_path: 'data/penism/test_data4_3.csv'
     val_data_path: None
     train_data_path: data/penism/train_data_3.csv
     label_path: data/SWAT/labels.csv
@@ -113,7 +112,7 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: 'data/penism/test_data4_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
