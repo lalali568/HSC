@@ -4,6 +4,7 @@ import numpy as np
 from torch_geometric.nn import GATConv
 from torch_geometric.utils import  dense_to_sparse
 from torch_geometric.data import Data
+from torch.nn import MultiheadAttention
 
 class Chomp1d(nn.Module):
     def __init__(self, chomp_size):
@@ -131,41 +132,51 @@ class GATModel(nn.Module):
         super(GATModel,self).__init__()
         self.config = config
         self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
-        self.lin = nn.Linear(config['window_size']*config['num_heads'], config['window_size'], bias=False)
-        self.edge_index = torch.tensor([[i, j] for i in range(config['feat_num']) for j in range(config['feat_num']) ], dtype=torch.long).t().contiguous()
-
+        self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
+        self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
+        self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])
     def forward(self,x):
-        x=x.permute(0,2,1)
-        batch_edge_index = self.get_batch_edge_index(self.edge_index, x.size(0), self.config['feat_num']).to(self.config['device']).detach()
         x= x.reshape(-1,x.size(-1))
-        x = self.conv(x, batch_edge_index)
+        x = self.conv(x, self.edge_index)
         x = self.lin(x)
-        x=x.reshape(-1,self.config['window_size'],self.config['feat_num'])
+        x=x.view(-1,self.config['window_size'],self.config['input_dim'])
         return x
 
-    def get_batch_edge_index(self,org_edge_index, batch_num, node_num):
-        # org_edge_index:(2, edge_num)
-        edge_index = org_edge_index
-        edge_num = org_edge_index.shape[1]
-        batch_edge_index = edge_index.repeat(1, batch_num).contiguous()
 
-        for i in range(batch_num):
-            batch_edge_index[:, i * edge_num:(i + 1) * edge_num] += i * node_num
+class Multi_Head(nn.Module):
+    def __init__(self,config):
+        super(Multi_Head,self).__init__()
+        self.config = config
+        self.multihead = MultiheadAttention(config['window_size'],config['num_heads'])
+        self.lin_k = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.lin_q = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.lin_v = nn.Linear(config['window_size'], config['window_size'], bias=False)
+        self.norm = nn.LayerNorm(config['input_dim'])
+        self.dropout = nn.Dropout(config['dropout'])
+    def forward(self,x):
+        x = x.permute(0,2,1)
+        q = self.lin_q(x)
+        k = self.lin_k(x)
+        v = self.lin_v(x)
+        x,_ = self.multihead(q,k,v)
+        x = x.permute(0,2,1)
+        return x
 
-        return batch_edge_index.repeat(1, batch_num).contiguous()
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()
-        self.gat1= GATModel(config,config['window_size'],config['window_size'])
+        self.multihead = Multi_Head(config)
+        self.gat1= GATModel(config,config['input_dim'],config['input_dim'])
         self.lin1=nn.Linear(config['input_dim'], config['input_dim'], bias=True)
         self.lin2=nn.Linear(config['input_dim'], config['input_dim'], bias=True)
         self.leaky = torch.nn.LeakyReLU()
         self.sigmoid = torch.nn.Sigmoid()
-        self.gat2 = GATModel(config,config['window_size'],config['window_size'])
+        self.gat2 = GATModel(config,config['input_dim'],config['input_dim'])
         self.norm = nn.LayerNorm(config['input_dim'])
         self.dropout = nn.Dropout(config['dropout'])
     def forward(self,x):
-        out = self.gat1(x)
+        out = self.multihead(x)
+        out = self.gat1(out)
         out = self.leaky(self.lin1(out))
         out = self.norm(out)
         out = self.dropout(out)

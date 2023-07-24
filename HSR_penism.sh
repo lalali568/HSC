@@ -2,7 +2,7 @@
 new_dataset="penism"
 sed -i "s#dataset:.*#dataset: $new_dataset#" config/HSR/config.yaml
 # 更新yaml文件的变量
-new_epoch=50
+new_epoch=100
 sed -i "s#epoch:.*#epoch: $new_epoch#" config/HSR/config.yaml
 
 new_train_data=data/penism/train_data_3.csv
