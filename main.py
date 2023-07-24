@@ -549,7 +549,7 @@ if config['model'] == 'GDN':
     GDN_trainer.trainer(config, model, train_dataloader, optimizer)
 if config['model'] == 'MTAD_GAT':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
-    MTAD_GAT_trainer.trainer(config, model, train_dataloader, optimizer)
+#    MTAD_GAT_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'
