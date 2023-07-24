@@ -1,15 +1,16 @@
 random_seed: 1
 model: HSR
-dataset: MSL
+dataset: penism
 device: 'cuda'
 batch_size: 32
 val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
-  test_data_path: data/MSL/T-13_test.npy
+  alpha: 1
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
   epoch: 100
@@ -25,10 +26,10 @@ MSL:
   feat_num: 55
 SMAP:
   alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data1_3.csv'
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
   epoch: 100
@@ -44,10 +45,10 @@ SMAP:
   feat_num: 25
 SMD:
   alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
   epoch: 100
@@ -61,11 +62,11 @@ SMD:
   num_heads: 4
   num_transformer_layer: 2
 penism:
-  alpha: 1
-  test_data_path: data/MSL/T-13_test.npy
+  alpha: 0.7
+  test_data_path: 'data/penism/test_data1_3.csv'
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
   epoch: 100
@@ -76,7 +77,7 @@ penism:
   kernel_size: 3
   radius: 5
   tcn_bias: 1
-  num_heads: 8
+  num_heads: 4
   num_transformer_layer: 2
 
   #下面加的就是我在改变decoder,使用drgru之后添加的参数，还是尝试阶段
@@ -88,10 +89,10 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: data/MSL/T-13_test.npy
+    test_data_path: 'data/penism/test_data4_3.csv' 
     val_data_path: None
-    train_data_path: data/MSL/T-13_train.npy
-    label_path: data/MSL/T-13_labels.npy
+    train_data_path: data/penism/train_data_3.csv
+    label_path: data/SWAT/labels.csv
     window_size: 20
     step: 20
     epoch: 100
@@ -112,10 +113,10 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: data/MSL/T-13_test.npy
+  test_data_path: 'data/penism/test_data4_3.csv' 
   val_data_path: None
-  train_data_path: data/MSL/T-13_train.npy
-  label_path: data/MSL/T-13_labels.npy
+  train_data_path: data/penism/train_data_3.csv
+  label_path: data/SWAT/labels.csv
   window_size: 20
   step: 20
   epoch: 100

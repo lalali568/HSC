@@ -36,7 +36,7 @@ def smooth(y, box_pts=1):
     return y_smooth
 
 
-def plot_out(y_true, y_pred, ascore,model,dataset,val=False,caption=None):
+def plot_out(y_true, y_pred, ascore,model,dataset,val=False,caption=None,forecast=False):
     #if 'TranAD' in name: y_true = torch.roll(y_true, 1, 0)
     now = datetime.datetime.now()
     date_string = now.strftime("%Y-%m-%d_%H-%M-%S")
@@ -47,7 +47,6 @@ def plot_out(y_true, y_pred, ascore,model,dataset,val=False,caption=None):
     os.makedirs(path, exist_ok=True)
     file_name = date_string + '.pdf'
     pdf = PdfPages(os.path.join(path, file_name))
-
     for dim in range(y_true.shape[1]):
         y_t, y_p, a_s = y_true[:, dim], y_pred[:, dim], ascore[:, dim]
         fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)  # 这个就是构造一个有两行一列的子图的图，同时两个图共享x轴
@@ -66,6 +65,7 @@ def plot_out(y_true, y_pred, ascore,model,dataset,val=False,caption=None):
         ax2.set_ylabel('Anomaly Score')
         pdf.savefig(fig)
         plt.close()
+
     pdf.close()
 
 def prediction_out(orig_pred,pred,gt,model,dataset):

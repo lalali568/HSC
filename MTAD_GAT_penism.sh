@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 new_dataset="penism"
-sed -i "s#dataset:.*#dataset: $new_dataset#" config/HSR/config.yaml
+config_file="config/MTAD_GAT/config.yaml"
+sed -i "s#dataset:.*#dataset: $new_dataset#" "$config_file"
 # 更新yaml文件的变量
 new_epoch=100
-sed -i "s#epoch:.*#epoch: $new_epoch#" config/HSR/config.yaml
+sed -i "s#epoch:.*#epoch: $new_epoch#" "$config_file"
 
 new_train_data=data/penism/train_data_3.csv
-sed -i "s#train_data_path:.*#train_data_path: $new_train_data#" config/HSR/config.yaml
+sed -i "s#train_data_path:.*#train_data_path: $new_train_data#" "$config_file"
 # 注释和取消注释训练的代码
 comment_lines() {
   sed -i "$1s/^/#/" main.py
@@ -19,20 +20,16 @@ uncomment_lines() {
 # 循环运行测试数据
 run_test_data() {
   local test_data_path=$1
-  sed -i "s#test_data_path:.*#test_data_path: $test_data_path #" config/HSR/config.yaml
-  python main.py --model_config_path config/HSR/config.yaml
+  sed -i "s#test_data_path:.*#test_data_path: $test_data_path #" "$config_file"
+  python main.py --model_config_path "$config_file"
 }
 
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 506
-    comment_lines 507
-    comment_lines 515
+    comment_lines 552
   elif [[ $1 -eq 15 ]]; then
-    uncomment_lines 421
-    uncomment_lines 422
-    uncomment_lines 427
+    uncomment_lines 552
   fi
 }
 
