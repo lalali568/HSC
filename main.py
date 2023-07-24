@@ -6,22 +6,22 @@ import random
 import torch
 import os
 import argparse
-from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester,SSHSR_tester,GDN_tester
+from tester import TranAD_tester, AE_basic_tester, GRELEN_tester, COUTA_tester, HSR_tester,SSHSR_tester,GDN_tester,MTAD_GAT_tester
 from util import LoadConfig, metric, pot, roc_auc_score, Set_Seed, Save_Model, ploting, slice_windows_data, get_metrics, \
     adjust_scores,produce_train_target_data,GDN_proceese_data
-from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset,GDN_dataset
+from dataset import TranAD_dataset, AE_basic_dataset, GRELEN_dataset, COUTA_dataset, HSR_dataset,SSHSR_dataset,GDN_dataset,MTAD_GAT_dataset
 from torch.utils.data import DataLoader
 from models import TranAD_model as TranAD_model
-from models import HSR_model_3 as HSR_model
-from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model,GDN_model
-from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer,SSHSR_trainer, GDN_trainer
+from models import HSR_model_2 as HSR_model
+from models import AE_basic, GRELEN_model, COUTA_model,SSHSR_model,GDN_model,MTAD_GAT_model
+from trainer import TranAD_trainer, AE_basic_trainer, GRELEN_trainer, COUTA_trainer, HSR_trainer2,HSR_trainer,SSHSR_trainer, GDN_trainer,MTAD_GAT_trainer
 import torch.nn as nn
 import yaml
 from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/MTAD_GAT/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -318,7 +318,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_val_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'])
-
     if config['dataset'] == 'WADI':
         train_data = np.loadtxt(config['train_data_path'],delimiter=',')
         test_data = np.loadtxt(config['test_data_path'],delimiter=',')
@@ -394,7 +393,22 @@ if config['model'] == "GDN":
         train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
         test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
 
-
+if config['model']=='MTAD_GAT':
+    if config['dataset'] == 'penism':
+        train_data = torch.tensor(np.loadtxt(config['train_data_path'], delimiter=','),dtype=torch.float32)
+        test_data = torch.tensor(np.loadtxt(config['test_data_path'], delimiter=','),dtype=torch.float32)
+        test_labels = test_data[:, -1]
+        test_data=test_data[:,:-1]
+        test_data_orig = test_data
+        train_dataset = MTAD_GAT_dataset.dataset(config, train_data)
+        test_dataset = MTAD_GAT_dataset.dataset(config, test_data)
+    if config['dataset'] == "MSL":
+        train_data = torch.tensor(np.load(config['train_data_path']),dtype=torch.float32)
+        test_data = torch.tensor(np.load(config['test_data_path']),dtype=torch.float32)
+        test_labels = torch.tensor(np.load(config['label_path']),dtype=torch.float32)
+        test_data_orig = test_data
+        train_dataset = MTAD_GAT_dataset.dataset(config, train_data)
+        test_dataset = MTAD_GAT_dataset.dataset(config, test_data)
 # %%  设定dataloader
 if config['model'] == 'TranAD':
     train_dataloader = DataLoader(train_dataset_w, batch_size=config['train_batchsize'],shuffle=False)
@@ -440,6 +454,9 @@ if config['model'] == 'SSHSR':
 if config['model'] == 'GDN':
     train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
     test_dataloader = DataLoader(test_dataset, batch_size=config['batch_size'], shuffle=False)
+if config['model'] == 'MTAD_GAT':
+    train_dataloader = DataLoader(train_dataset, batch_size=config['batch_size'], shuffle=True)
+    test_dataloader = DataLoader(test_dataset, batch_size=config['batch_size'], shuffle=False)
 # %% 设定model
 if config['model'] == 'TranAD':
     model = TranAD_model.TranAD(config)
@@ -465,6 +482,9 @@ if config['model'] == 'SSHSR':
     model1.to(device)
 if config['model'] == 'GDN':
     model = GDN_model.GDN(config)
+    model.to(device)
+if config['model'] == 'MTAD_GAT':
+    model = MTAD_GAT_model.MTAD_GAT(config)
     model.to(device)
 
 # %% 开始训练
@@ -534,6 +554,9 @@ if config['model'] == 'SSHSR':
 if config['model'] == 'GDN':
     optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
     GDN_trainer.trainer(config, model, train_dataloader, optimizer)
+if config['model'] == 'MTAD_GAT':
+    optimizer = torch.optim.Adam(model.parameters(), lr=config['lr'])
+    MTAD_GAT_trainer.trainer(config, model, train_dataloader, optimizer)
 # %%开始测试
 if config['model'] == 'TranAD':
     fname = 'checkpoints/TranAD_' + config['dataset'] + '/model.ckpt'
@@ -615,6 +638,15 @@ if config['model'] == 'GDN':
     torch.zero_grad = True
     model.eval()
     test_loss,test_ground_list, test_predicted_list,test_label_list = GDN_tester.tester(config, model, test_dataloader, plot_flag=True)
+if config['model'] == 'MTAD_GAT':
+    fname = 'checkpoints/MTAD_GAT_' + config['dataset'] + '/model.ckpt'
+    checkpoints = torch.load(fname)
+    model = MTAD_GAT_model.MTAD_GAT(config)
+    model.load_state_dict(checkpoints['model_state_dict'])
+    model.to(device)
+    torch.zero_grad = True
+    model.eval()
+    anomaly_scores,actual,preds,recons = MTAD_GAT_tester.tester(config,model, test_data_orig, test_dataloader, device, plot_flag=True)
 # %%计算threshold同时整理预测值，打印最后结果
 if config['model'] == 'TranAD':
     if config['eval_method'] == 'best_f1':
@@ -772,3 +804,18 @@ if config['model'] == 'GDN':
         ploting.prediction_out(y_pred_orig, y_pred.reshape(len(test_ground_list)), test_label_list, config['model'],config['dataset'])
         ploting.loss_eachtimestamp_prediction_out(test_label_list, y_pred, scores_copy, config['model'],config['dataset'])
         print(eval_info2, 'f1,precision,recall,threshold')
+if config['model']=='MTAD_GAT':
+    scores=np.sum(anomaly_scores,axis=1)
+    scaler = MinMaxScaler(feature_range=(0, 1))
+    scores = scaler.fit_transform(scores.reshape(len(scores), 1))
+    scores_copy = scores
+    if len(actual) != len(test_data_orig):
+        test_labels = test_labels[-len(scores):]
+    scores = adjust_scores.adjust_scores(test_labels, scores)
+    eval_info2 = get_metrics.get_best_f1(test_labels, scores)
+    thred = eval_info2[3]
+    y_pred = np.where(scores >= thred, 1, 0)
+    y_pred_orig = np.where(scores_copy >= thred, 1, 0)
+    ploting.prediction_out(y_pred_orig, y_pred.reshape(len(actual)), test_labels, config['model'],config['dataset'])
+    ploting.loss_eachtimestamp_prediction_out(test_labels, y_pred.reshape(len(actual)), scores_copy, config['model'],config['dataset'])
+    print(eval_info2, 'f1,precision,recall,threshold')

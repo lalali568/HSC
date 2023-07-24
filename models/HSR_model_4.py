@@ -132,7 +132,7 @@ class GATModel(nn.Module):
         super(GATModel,self).__init__()
         self.config = config
         self.conv = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
-        self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=False)
+        self.lin = nn.Linear(config['input_dim']*config['num_heads'], config['input_dim'], bias=True)
         self.edge_index = torch.tensor([[i, j] for i in range(config['window_size']) for j in range(config['window_size']) if i != j], dtype=torch.long).t().contiguous()
         self.edge_index = self.edge_index.repeat(config['batch_size'],1).view(2,-1).to(config['device'])
     def forward(self,x):
@@ -140,6 +140,24 @@ class GATModel(nn.Module):
         x = self.conv(x, self.edge_index)
         x = self.lin(x)
         x=x.view(-1,self.config['window_size'],self.config['input_dim'])
+        return x
+class GATModel_2(nn.Module):
+    def __init__(self,config,in_features,out_features):
+        super(GATModel_2,self).__init__()
+        self.config = config
+        self.conv1 = GATConv(in_features, out_features,v2=True, heads=config['num_heads'], dropout=config['dropout'],)
+        self.lin = nn.Linear(config['window_size']*config['num_heads'], config['window_size'], bias=True)
+        self.edge_index = torch.tensor([[i, j] for i in range(config['input_dim']) for j in range(config['input_dim']) if i != j],dtype=torch.long).t().contiguous()
+        self.act = torch.nn.LeakyReLU()
+    def forward(self,x):
+        x = x.permute(0,2,1)
+        batch_size = x.size(0)
+        x = x.reshape(-1,x.size(-1))
+        batch_edge = self.get_batch_edge_index(self.edge_index, batch_size, self.config['input_dim']).to(self.config['device'])
+        x = self.conv1(x, batch_edge)
+        x =self.act(self.lin(x))
+        x = x.view(-1,self.config['input_dim'],self.config['window_size'])
+        x = x.permute(0,2,1)
         return x
 
 
@@ -162,27 +180,35 @@ class Multi_Head(nn.Module):
         x = x.permute(0,2,1)
         return x
 
+
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()
-        self.multihead = Multi_Head(config)
         self.gat1= GATModel(config,config['input_dim'],config['input_dim'])
         self.lin1=nn.Linear(config['input_dim'], config['input_dim'], bias=True)
         self.lin2=nn.Linear(config['input_dim'], config['input_dim'], bias=True)
+        self.lin3=nn.Linear(config['input_dim'], config['input_dim'], bias=True)
         self.leaky = torch.nn.LeakyReLU()
         self.sigmoid = torch.nn.Sigmoid()
         self.gat2 = GATModel(config,config['input_dim'],config['input_dim'])
         self.norm = nn.LayerNorm(config['input_dim'])
         self.dropout = nn.Dropout(config['dropout'])
+        self.gat_all_node_1 = GATModel_2(config,config['window_size'],config['window_size'])
+        self.gat_all_node_2 = GATModel_2(config,config['window_size'],config['window_size'])
+
     def forward(self,x):
-        out = self.multihead(x)
-        out = self.gat1(out)
+        out = self.gat_all_node_1(x)
         out = self.leaky(self.lin1(out))
         out = self.norm(out)
         out = self.dropout(out)
-        out = self.gat2(out)
+        out_1 = self.gat1(out)
+        out = self.gat_all_node_2(out_1)
         out = self.leaky(self.lin2(out))
-        return out
+        out = self.norm(out)
+        out = self.dropout(out)
+        out_2 = self.gat2(out)
+        out = self.leaky(self.lin3(out))
+        return out,out_1,out_2
 
 
 

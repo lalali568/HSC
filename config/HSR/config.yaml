@@ -7,7 +7,7 @@ val_fac: 0.1
 eval_method: 'best_f1'
 MSL:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -26,7 +26,7 @@ MSL:
   feat_num: 55
 SMAP:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: 'data/penism/test_data1_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -45,7 +45,7 @@ SMAP:
   feat_num: 25
 SMD:
   alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -62,8 +62,8 @@ SMD:
   num_heads: 4
   num_transformer_layer: 2
 penism:
-  alpha: 1
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  alpha: 0.7
+  test_data_path: 'data/penism/test_data1_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
@@ -88,7 +88,7 @@ penism:
   GRU_n_dim: 64
 SWAT:
     alpha: 1
-    test_data_path: 'data/penism/test_data15_3.csv' 
+    test_data_path: 'data/penism/test_data4_3.csv'
     val_data_path: None
     train_data_path: data/penism/train_data_3.csv
     label_path: data/SWAT/labels.csv
@@ -96,7 +96,7 @@ SWAT:
     step: 20
     epoch: 100
     learn_rate: 0.0001
-    dropout: 0.5
+    dropout: 0.1
     input_dim: 0 #这个在读取数据的时候得到
     hidden_dim: [ 51 ]
     kernel_size: 3
@@ -112,7 +112,7 @@ SWAT:
     GRU_n_dim: 64
 WADI:
   alpha: 0.8
-  test_data_path: 'data/penism/test_data15_3.csv' 
+  test_data_path: 'data/penism/test_data4_3.csv'
   val_data_path: None
   train_data_path: data/penism/train_data_3.csv
   label_path: data/SWAT/labels.csv
