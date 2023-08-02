@@ -7,12 +7,12 @@ val_fac: 0.1
 eval_method: 'best_f1'
 penism:
   window_size: 20
-  epoch: 700
+  epoch: 100
   normalize: 1 #这里的1我是想表示ture
   lr: 0.001
-  train_data_path: data/SMD/processed_data/train/machine-1-1.csv
-  test_data_path: data/SMD/processed_data/test/machine-1-1.csv
-  label_path: data/SMD/processed_data/test_label/machine-1-1.csv
+  train_data_path: data/SMD/processed_data/train/machine-3-11.csv
+  test_data_path: data/SMD/processed_data/test/machine-3-11.csv
+  label_path: data/SMD/processed_data/test_label/machine-3-11.csv
   horizon: 1
   n_features: 16
   out_dim: 16
@@ -29,12 +29,12 @@ penism:
   kernel_size: 7
 MSL:
   window_size: 20
-  epoch: 700
+  epoch: 100
   normalize: 1 #这里的1我是想表示ture
   lr: 0.001
-  train_data_path: data/SMD/processed_data/train/machine-1-1.csv
-  test_data_path: data/SMD/processed_data/test/machine-1-1.csv
-  label_path: data/SMD/processed_data/test_label/machine-1-1.csv
+  train_data_path: data/SMD/processed_data/train/machine-3-11.csv
+  test_data_path: data/SMD/processed_data/test/machine-3-11.csv
+  label_path: data/SMD/processed_data/test_label/machine-3-11.csv
   horizon: 1
   n_features: 55
   out_dim: 55
@@ -51,12 +51,12 @@ MSL:
   kernel_size: 7
 SMD:
   window_size: 20
-  epoch: 700
+  epoch: 100
   normalize: 1 #这里的1我是想表示ture
   lr: 0.001
-  train_data_path: data/SMD/processed_data/train/machine-1-1.csv
-  test_data_path: data/SMD/processed_data/test/machine-1-1.csv
-  label_path: data/SMD/processed_data/test_label/machine-1-1.csv
+  train_data_path: data/SMD/processed_data/train/machine-3-11.csv
+  test_data_path: data/SMD/processed_data/test/machine-3-11.csv
+  label_path: data/SMD/processed_data/test_label/machine-3-11.csv
   horizon: 1
   n_features: 38
   out_dim: 38

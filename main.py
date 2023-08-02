@@ -21,7 +21,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # %%设置参数
 
-with open('config/MTAD_GAT/config.yaml', 'r', encoding='utf-8') as f:
+with open('config/HSR/config.yaml', 'r', encoding='utf-8') as f:
     config = yaml.load(f, Loader=yaml.FullLoader)
     config.update(config[config['dataset']])
     del config[config['dataset']]
@@ -57,7 +57,6 @@ if config['model'] == 'TranAD':
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
         train_val_data_orig = train_data_orig  # 把这个提出来是因为后面绘图要用
         labels = np.loadtxt(config['label_path'], delimiter=',')
-
 if config['model'] == 'AE_basic':
     train_dataset = AE_basic_dataset.dataset(config, flag='train')
     val_dataset = AE_basic_dataset.dataset(config, flag='val')
@@ -70,7 +69,6 @@ if config['model'] == 'AE_basic':
         train_val_data_orig, val_data_orig, test_data_orig = train_data_orig[:8000, :], val_data_orig[:,
                                                                                         :-1], test_data_orig[:, :-1]
         labels = np.loadtxt(config['test_data_path'], delimiter=',')[:, -1]
-
 if config['model'] == 'GRELEN':
     train_dataset = GRELEN_dataset.dataset(config, flag='train')
     test_dataset = GRELEN_dataset.dataset(config, flag='test')
@@ -108,7 +106,6 @@ if config['model'] == 'GRELEN':
         res = len(labels) % config['window_size']
         if res!=0:
             labels = labels[:-res]
-
 if config['model'] == 'COUTA':
     if config['dataset'] == 'SWAT':
         # 把数据进行切片和val的划分
@@ -222,7 +219,6 @@ if config['model'] == 'COUTA':
         test_data_orig = np.load(config['test_data_path'])
         train_val_data_orig = np.load(config['train_data_path'])
         labels = np.load(config['label_path'])
-
 if config['model'] == 'HSR':
     if config['dataset'] == 'MSL':
         train_data = np.load(config['train_data_path'])
@@ -260,7 +256,10 @@ if config['model'] == 'HSR':
         labels = np.load(config['label_path'])
     if config['dataset'] == 'penism':
         train_data = np.loadtxt(config['train_data_path'], delimiter=',')
-        test_data = np.loadtxt(config['test_data_path'], delimiter=',')[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
+        if config['test_data_path'] == 'data/penism/train_data_3.csv':
+            test_data = np.loadtxt(config['test_data_path'], delimiter=',')[0:400,:]
+        else:
+            test_data = np.loadtxt(config['test_data_path'], delimiter=',')[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
         # test_data  =np.loadtxt(config['test_data_path'], delimiter=',')#这是如果test是swat_penism的话就使用这句
         config['input_dim'] = train_data.shape[-1]
         step = 1
@@ -281,8 +280,12 @@ if config['model'] == 'HSR':
         # 原始的数据
         test_data_orig = np.loadtxt(config['test_data_path'], delimiter=',')
         train_val_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
-        labels = test_data_orig[:, -1]
-        test_data_orig = test_data_orig[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
+        if config['test_data_path'] == 'data/penism/train_data_3.csv':
+            test_data_orig = test_data_orig[0:400, :]
+            labels = np.zeros(len(test_data_orig))
+        else:
+            labels = test_data_orig[:, -1]
+            test_data_orig = test_data_orig[:, :-1]  # 这是如果test是swat_penism的话的话就要注释掉
     if config['dataset'] == 'SWAT':
         train_data = np.loadtxt(config['train_data_path'],delimiter=',')
         test_data = np.loadtxt(config['test_data_path'],delimiter=',')
@@ -336,7 +339,6 @@ if config['model'] == 'HSR':
         test_data_orig = np.loadtxt(config['test_data_path'],delimiter=',')
         train_val_data_orig = np.loadtxt(config['train_data_path'],delimiter=',')
         labels = np.loadtxt(config['label_path'],delimiter=',')
-
 if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面是模型的输入，后面40维是模型的输出
     if config['dataset'] == 'penism':
         train_data_orig = np.loadtxt(config['train_data_path'], delimiter=',')
@@ -361,7 +363,6 @@ if config['model'] == "SSHSR":#注意这个模型前面的20维在dataset里面�
         train_plus_target_reverse = np.concatenate((train_data_reverse, train_target_data_reverse), axis=1)#将train_data_reverse和train_target_data_reverse拼接起来
         train_plus_target_data = np.concatenate((train_plus_target,train_plus_target_reverse))
         train_plus_target_dataset = SSHSR_dataset.dataset(config, train_plus_target_reverse)
-
 if config['model'] == "GDN":
     if config['dataset'] == 'penism':
         train_orig = np.loadtxt(config['train_data_path'], delimiter=',')
@@ -392,7 +393,6 @@ if config['model'] == "GDN":
         test_input, test_output, test_labels = GDN_proceese_data.process(config, torch.tensor(test_orig[:, :-1]).permute(1, 0),torch.tensor(test_labels))
         train_dataset = GDN_dataset.dataset(config, train_input, train_output, train_labels)
         test_dataset = GDN_dataset.dataset(config, test_input, test_output, test_labels)
-
 if config['model']=='MTAD_GAT':
     if config['dataset'] == 'penism':
         train_data = torch.tensor(np.loadtxt(config['train_data_path'], delimiter=','),dtype=torch.float32)

@@ -26,13 +26,13 @@ run_test_data() {
 # 循环注释和取消注释训练代码
 toggle_training_code() {
   if [[ $1 -eq 1 ]]; then
-    comment_lines 506
-    comment_lines 507
-    comment_lines 515
+    comment_lines 533
+    comment_lines 534
+    comment_lines 542
   elif [[ $1 -eq 15 ]]; then
-    uncomment_lines 421
-    uncomment_lines 422
-    uncomment_lines 427
+    uncomment_lines 533
+    uncomment_lines 534
+    uncomment_lines 542
   fi
 }
 

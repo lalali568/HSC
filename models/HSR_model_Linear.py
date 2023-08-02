@@ -143,26 +143,28 @@ class GATModel(nn.Module):
 class HSR_2(nn.Module):
     def __init__(self,config):
         super(HSR_2,self).__init__()
-        self.gat1= GATModel(config,config['input_dim'],config['input_dim'])
-        self.lin1=nn.Linear(config['input_dim'], config['input_dim'], bias=False)
-        self.lin2=nn.Linear(config['input_dim'], config['input_dim'], bias=False)
+        self.lin1=nn.Linear(config['input_dim'], int(config['input_dim']*1.5), bias=True)
+        self.lin2=nn.Linear(int(config['input_dim']), config['input_dim']*2, bias=True)
+        self.lin3=nn.Linear(config['input_dim']*2, int(config['input_dim']*1.5), bias=True)
+        self.lin4=nn.Linear(int(config['input_dim']*1.5), config['input_dim'], bias=True)
         self.leaky = torch.nn.LeakyReLU()
         self.sigmoid = torch.nn.Sigmoid()
-        self.gat2 = GATModel(config,config['input_dim'],config['input_dim'])
         self.norm = nn.LayerNorm(config['input_dim'])
         self.dropout = nn.Dropout(config['dropout'])
-        self.lin3_1=nn.Linear(config['input_dim'], config['input_dim'], bias=False)
-        self.lin3_2=nn.Linear(config['input_dim'], config['input_dim'], bias=False)
     def forward(self,x):
-        out = self.gat1(x)
-        out = self.leaky(self.lin1(out))
-        out = self.norm(out)
+        out = self.leaky(self.lin1(x))
+        #out = self.norm(out)
         out = self.dropout(out)
-        out = self.gat2(out)
         out = self.leaky(self.lin2(out))
-        out = self.lin3_1(out)
-        out = self.leaky(out)
-        #out = self.lin3_2(out)
+        #out = self.norm(out)
+        out = self.dropout(out)
+        out = self.leaky(self.lin3(out))
+        #out = self.norm(out)
+        out = self.dropout(out)
+        out = self.leaky(self.lin3(out))
+        #out = self.norm(out)
+        out = self.dropout(out)
+
         return out
 
 
