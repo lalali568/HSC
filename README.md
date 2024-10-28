@@ -41,7 +41,7 @@ python main.py
 │
 ├── data              # Directory for data files
 │
-├── dataset           # Dataset loader
+├── dataset           # Dataset code
 │
 ├── models            # Model architectures for HSC
 │
