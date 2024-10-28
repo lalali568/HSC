@@ -1,18 +1,21 @@
+
 # HSC
-这个项目是论文HSC: One-Class Classification Constraint in Reconstruction Networks for Multivariate Time Series 
-Anomaly Detection的代码实现
-<img src="./fig/model.png" />
+This repository contains the implementation of the paper **HSC: One-Class Classification Constraint in Reconstruction Networks for Multivariate Time Series Anomaly Detection**.
+
+<img src="./fig/model.png" alt="HSC Model" />
 
 ## Datasets
-文中使用的数据集可由下面的文章中获取其相关内容
-1. **MSL (Mars Science Laboratory rover)** [Detecting Spacecraft Anomalies Using LSTMs and Nonparametric Dynamic Thresholding](https://arxiv.org/pdf/1802.04431).
+The datasets used in this paper can be found in the following sources:
 
-2. **SMD (Server Machine Dataset)** [Robust Anomaly Detection for Multivariate Time Series through Stochastic Recurrent Neural Network](https://netman.aiops.org/wp-content/uploads/2019/08/OmniAnomaly_camera-ready.pdf).
+1. **MSL (Mars Science Laboratory rover)**: [Detecting Spacecraft Anomalies Using LSTMs and Nonparametric Dynamic Thresholding](https://arxiv.org/pdf/1802.04431).
+   
+2. **SMD (Server Machine Dataset)**: [Robust Anomaly Detection for Multivariate Time Series through Stochastic Recurrent Neural Network](https://netman.aiops.org/wp-content/uploads/2019/08/OmniAnomaly_camera-ready.pdf).
 
-3. **SWaT (Secure Water Treatment)** [SWaT: a water treatment testbed for research and training on ICS security](https://ieeexplore.ieee.org/abstract/document/7469060).
+3. **SWaT (Secure Water Treatment)**: [SWaT: a water treatment testbed for research and training on ICS security](https://ieeexplore.ieee.org/abstract/document/7469060).
 
 ## Requirements
-代码使用的python版本为3.12，依赖包如下：
+The project requires Python version 3.12. The necessary packages are listed below:
+
 ```text
 scikit-learn==1.4.2
 numpy==1.26.4
@@ -20,10 +23,11 @@ torch==2.4.0
 torch_geometric==2.5.3
 tqdm==4.66.4
 ```
+
 ## Usage
-代码中的各项参数，通过config.yaml文件进行配置
-代码运行的方式如下：
-```text
+The parameters for running the code are configured in the `config.yaml` file. To execute the project, use the following command:
+
+```bash
 python main.py
 ```
 
@@ -38,21 +42,22 @@ python main.py
 │
 ├── dataset           # Dataset loader
 │
-├── models            # Model architecture for HSC
+├── models            # Model architectures for HSC
 │
 ├── tester            # Script for testing the model
 │
 ├── trainer           # Script for training the model
 │
 ├── util              # Utility functions directory
-│   
+│
 ├── main.py           # Main script to run the project
 │
 └── README.md         # Project documentation
 ```
-## Results
-<img src="./fig/result1.png" />
-<img src="./fig/result2.png" />
 
-## 联系方式
-如果有任何问题，请联系lijiazhen_lalali@163.com
+## Results
+<img src="./fig/result1.png" alt="Results 1" />
+<img src="./fig/result2.png" alt="Results 2" />
+
+## Contact
+For any problems, feel free to contact: lijiazhen_lalali@163.com
