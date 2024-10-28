@@ -1,0 +1,57 @@
+random_seed: 0
+model: HSR
+dataset: SMD
+device: cuda
+batch_size: 16
+eval_method: best_f1
+
+MSL:
+  alpha: 1
+  test_data_path: data/MSL/D-14_test.npy
+  train_data_path: data/MSL/D-14_train.npy
+  label_path: data/MSL/D-14_labels.npy
+  window_size: 32
+  step: 1
+  epoch: 10
+  learn_rate: 0.0001
+  dropout: 0.1
+  input_dim: 0
+  hidden_dim: [55]
+  kernel_size: 3
+  tcn_bias: 1
+  radius: 2
+  num_heads: 1
+
+SMD:
+  alpha: 1
+  test_data_path: data/SMD/processed_data/test/machine-1-1.csv
+  train_data_path: data/SMD/processed_data/train/machine-1-1.csv
+  label_path: data/SMD/processed_data/test_label/machine-1-1.csv
+  window_size: 20
+  step: 1
+  epoch: 10
+  learn_rate: 0.001
+  dropout: 0.1
+  input_dim: 0
+  hidden_dim: [ 38 ]
+  kernel_size: 10
+  tcn_bias: 1
+  radius: 1
+  num_heads: 4
+
+SWAT:
+  alpha: 0.5
+  test_data_path: data/SWAT/test_data.csv
+  train_data_path: data/SWAT/train_data.csv
+  label_path: data/SWAT/labels.csv
+  window_size: 20
+  step: 1
+  epoch: 5
+  learn_rate: 0.001
+  dropout: 0.1
+  input_dim: 0
+  hidden_dim: [ 51 ]
+  kernel_size: 5
+  tcn_bias: 1
+  radius: 3
+  num_heads: 4
