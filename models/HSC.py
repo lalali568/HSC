@@ -21,7 +21,7 @@ class TemporalBlock(nn.Module):
         self.conv2 = nn.Conv1d(n_outputs, n_outputs, kernel_size, stride=stride, padding=padding, bias=bias,
                                dilation=dilation)
 
-        self.Chomp1d = Chomp1d(padding)  # 这个应该就是为了保证输出的长度和输入的长度一致
+        self.Chomp1d = Chomp1d(padding) 
         self.dropout = torch.nn.Dropout(dropout)
         self.residual = residual
         self.net = nn.Sequential(self.conv1, Chomp1d(padding), nn.ReLU(), nn.Dropout(dropout),
@@ -79,7 +79,7 @@ class Hypersphere(nn.Module):
 
         return out
 
-class HSC_1(nn.Module):#这个是tcn的版本
+class HSC_1(nn.Module):
     def __init__(self,config):
         super(HSC_1, self).__init__()
         self.hypersphere_layer = Hypersphere(config)
